@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SYSTEM.OFFLINE | Archive Maintenance</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&family=Space+Mono&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-color: #121212;
+            --text-primary: #E7E7E7;
+            --accent: #8A7BFE;
+            --game-bg: #1A1A1A;
+            --error: #F93324;
+        }
+
+        * {
+            box-sizing: border-box; /* This fixes all layout alignment issues */
+        }
+
+        body, html {
+            margin: 0; padding: 0; width: 100%; height: 100%;
+            background-color: var(--bg-color);
+            background-image: url('/VintageDust\ \(3\).jpg'); 
+            background-size: cover; background-attachment: fixed;
+            color: var(--text-primary);
+            font-family: 'Space Mono', monospace;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        /* CUSTOM GRAIN OVERLAY */
+        .grain-overlay {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            pointer-events: none; z-index: -1; opacity: 0.1;
+            background-image: url('data:image/svg+xml;utf8,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noiseFilter"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noiseFilter)"/%3E%3C/svg%3E');
+        }
+
+        /* ULTRA-SLOW INFINITE MARQUEE */
+        .marquee-bg {
+            position: fixed; width: 100%; background: var(--accent); color: #121212;
+            font-weight: bold; padding: 10px 0; top: 0; left: 0; z-index: 100;
+            border-bottom: 2px solid var(--text-primary);
+            display: flex; overflow: hidden;
+        }
+        .marquee-content { display: flex; width: 200%; animation: marquee 40s linear infinite; }
+        .marquee-text { white-space: nowrap; font-size: 0.85rem; padding-right: 50px; flex-shrink: 0; }
+        @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+        /* HEADER TEXT */
+        .header-section { text-align: center; margin-bottom: 15px; z-index: 10; margin-top: 40px;}
+        .glitch-title {
+            font-family: 'Space Grotesk', sans-serif; font-size: 3rem; text-transform: uppercase;
+            margin: 0 0 5px 0; color: transparent; -webkit-text-stroke: 1.5px var(--text-primary);
+            letter-spacing: 2px;
+        }
+        .subtitle { color: var(--accent); font-size: 0.9rem; margin: 0; }
+
+        /* MAIN CONTAINER */
+        .game-wrapper {
+            background: var(--game-bg);
+            border: 2px solid var(--accent);
+            padding: 20px;
+            box-shadow: 10px 10px 0px rgba(138, 123, 254, 0.2);
+            text-align: center;
+            z-index: 10;
+            max-width: 400px;
+            width: 90%;
+            min-height: 450px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* BRUTALIST BUTTONS */
+        .btn-action {
+            width: 100%; background: transparent; color: var(--accent);
+            border: 1px solid var(--accent); padding: 12px 10px; font-family: 'Space Mono', monospace;
+            font-size: 0.85rem; cursor: pointer; text-transform: uppercase; transition: 0.3s;
+            outline: none; font-weight: bold; letter-spacing: 1px; margin-top: 10px;
+        }
+        .btn-action:hover, .btn-action:focus { background: var(--accent); color: #121212; }
+        .btn-info { color: var(--text-primary); border-color: var(--text-primary); }
+        .btn-info:hover, .btn-info:focus { background: var(--text-primary); color: #121212; }
+        
+        .action-row { display: flex; gap: 10px; margin-top: 15px; }
+        .action-row .btn-action { margin-top: 0; flex: 1; }
+
+        /* MENU SCREEN */
+        .menu-screen { display: flex; flex-direction: column; gap: 15px; }
+        .menu-title { font-size: 1.1rem; color: var(--text-primary); margin-bottom: 10px; letter-spacing: 1px; }
+
+        /* SNAKE SPECIFIC */
+        .score-board {
+            display: flex; justify-content: space-between; margin-bottom: 15px;
+            font-size: 1.2rem; font-weight: bold; border-bottom: 1px dashed #555; padding-bottom: 10px;
+        }
+        canvas { background: #0a0a0a; border: 1px solid #333; display: block; margin: 0 auto; image-rendering: pixelated; width: 300px; height: 300px; }
+
+        /* SUDOKU SPECIFIC (Alignment fixed) */
+        .level-select { display: flex; gap: 10px; margin-bottom: 15px; }
+        .btn-level {
+            flex: 1; background: transparent; color: var(--text-primary);
+            border: 1px dashed var(--text-primary); padding: 8px; font-family: 'Space Mono', monospace;
+            font-size: 0.8rem; cursor: pointer; text-transform: uppercase; transition: 0.3s;
+        }
+        .btn-level.active { background: var(--text-primary); color: var(--bg-color); border: 1px solid var(--text-primary); font-weight: bold; }
+
+        .sudoku-board {
+            display: grid;
+            grid-template-columns: repeat(9, 1fr);
+            grid-template-rows: repeat(9, 1fr);
+            width: 100%;
+            max-width: 320px; /* Perfect square size */
+            aspect-ratio: 1; /* Forces perfect square */
+            margin: 0 auto;
+            border: 2px solid var(--accent);
+            background: #0a0a0a;
+        }
+
+        .sudoku-cell {
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            font-family: 'Space Mono', monospace;
+            font-size: 1.2rem;
+            background: transparent;
+            color: #E7E7E7;
+            border: 1px solid #222;
+            outline: none;
+            padding: 0;
+            margin: 0;
+            border-radius: 0; /* Remove default iOS rounding */
+            appearance: none;
+        }
+        .sudoku-cell:focus { background: rgba(138, 123, 254, 0.2); }
+        .sudoku-cell.fixed { color: var(--accent); font-weight: bold; background: #111; pointer-events: none; }
+        .sudoku-cell.error { color: var(--error); background: rgba(249, 51, 36, 0.1); }
+
+        .border-right-thick { border-right: 2px solid var(--accent) !important; }
+        .border-bottom-thick { border-bottom: 2px solid var(--accent) !important; }
+
+        /* INSTRUCTIONS PANEL */
+        .instructions-panel {
+            display: none; background: #111; border: 1px dashed var(--accent);
+            padding: 15px; margin-top: 15px; text-align: left;
+            font-size: 0.75rem; color: #00ff41; line-height: 1.6;
+        }
+        .instructions-panel.show { display: block; }
+        .instructions-panel span { color: var(--text-primary); }
+
+        /* MOBILE CONTROLS (Only for Snake) */
+        .mobile-controls {
+            display: none; grid-template-columns: 60px 60px 60px; grid-template-rows: 60px 60px;
+            gap: 10px; margin-top: 20px; justify-content: center; z-index: 10; touch-action: none;
+        }
+        .d-pad {
+            background: rgba(255,255,255,0.05); border: 1px solid var(--text-primary);
+            color: var(--text-primary); font-size: 1.5rem; display: flex;
+            justify-content: center; align-items: center; border-radius: 4px; cursor: pointer;
+        }
+        .d-pad:active { background: var(--accent); color: #121212; border-color: var(--accent); }
+        #up { grid-column: 2; grid-row: 1; }
+        #left { grid-column: 1; grid-row: 2; }
+        #down { grid-column: 2; grid-row: 2; }
+        #right { grid-column: 3; grid-row: 2; }
+
+        @media (max-width: 768px) {
+            .glitch-title { font-size: 2rem; }
+            .sudoku-board { max-width: 280px; }
+            .sudoku-cell { font-size: 1rem; }
+            canvas { width: 280px; height: 280px; }
+            .action-row { flex-direction: column; gap: 10px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="marquee-bg">
+        <div class="marquee-content">
+            <span class="marquee-text">/// SYSTEM.OFFLINE /// REBUILDING ARCHIVE MODULES /// CHOOSE A SYSTEM PROTOCOL /// SYSTEM.OFFLINE /// REBUILDING ARCHIVE MODULES ///</span>
+            <span class="marquee-text">/// SYSTEM.OFFLINE /// REBUILDING ARCHIVE MODULES /// CHOOSE A SYSTEM PROTOCOL /// SYSTEM.OFFLINE /// REBUILDING ARCHIVE MODULES ///</span>
+        </div>
+    </div>
+
+    <div class="grain-overlay"></div>
+
+    <div class="header-section">
+        <h1 class="glitch-title">SYSTEM.OFFLINE</h1>
+        <p class="subtitle" id="status-msg">Waiting for server... Select Module</p>
+    </div>
+
+    <div class="game-wrapper">
+        
+        <div id="menu-screen" class="menu-screen">
+            <h2 class="menu-title">[ CHOOSE A SYSTEM MODULE ]</h2>
+            <button class="btn-action" onclick="loadGame('snake')">[ PLAY SNAKE.SYS ]</button>
+            <button class="btn-action" onclick="loadGame('sudoku')">[ PLAY SUDOKU.SYS ]</button>
+        </div>
+
+        <div id="snake-screen" style="display: none;">
+            <div class="score-board">
+                <span>SCORE: <span id="score">0</span></span>
+                <span>HIGH: <span id="highscore">0</span></span>
+            </div>
+            <canvas id="gameCanvas" width="300" height="300"></canvas>
+            
+            <div class="action-row">
+                <button class="btn-action" id="startBtn" onclick="initSnake()">[ START SYSTEM ]</button>
+                <button class="btn-action btn-info" id="infoSnakeBtn">[ HOW TO PLAY ]</button>
+            </div>
+            <button class="btn-action" style="border-style: dashed;" onclick="backToMenu()">[ SYSTEM MENU ]</button>
+
+            <div id="instructionsSnake" class="instructions-panel">
+                > <span>DESKTOP:</span> Use Arrow Keys or W-A-S-D.<br>
+                > <span>MOBILE:</span> Use the D-Pad below.<br>
+                > <span>GOAL:</span> Eat the white data blocks to score.<br>
+                > <span>AVOID:</span> Hitting borders or your own tail.<br>
+                > <span>REBOOT:</span> Press 'Enter' to restart.
+            </div>
+        </div>
+
+        <div id="sudoku-screen" style="display: none;">
+            <div class="level-select">
+                <button class="btn-level active" id="btnEasy" onclick="initSudoku('easy')">[ EASY ]</button>
+                <button class="btn-level" id="btnMedium" onclick="initSudoku('medium')">[ MEDIUM ]</button>
+            </div>
+
+            <div id="sudoku-board" class="sudoku-board"></div>
+            
+            <div class="action-row">
+                <button class="btn-action" id="checkBtn" onclick="checkSudoku()">[ CHECK SYSTEM ]</button>
+                <button class="btn-action btn-info" id="infoSudokuBtn">[ HOW TO PLAY ]</button>
+            </div>
+            <button class="btn-action" style="border-style: dashed;" onclick="backToMenu()">[ SYSTEM MENU ]</button>
+
+            <div id="instructionsSudoku" class="instructions-panel">
+                > <span>GOAL:</span> Fill the 9x9 grid with numbers 1-9.<br>
+                > <span>RULE 1:</span> Each row must contain 1-9 exactly once.<br>
+                > <span>RULE 2:</span> Each column must contain 1-9 exactly once.<br>
+                > <span>RULE 3:</span> Each 3x3 box must contain 1-9 exactly once.<br>
+                > <span>HINT:</span> Click 'CHECK SYSTEM' to verify your input. Wrong numbers will flash red.
+            </div>
+        </div>
+
+    </div>
+
+    <div class="mobile-controls" id="mobile-dpad">
+        <div class="d-pad" id="up">&#8593;</div>
+        <div class="d-pad" id="left">&#8592;</div>
+        <div class="d-pad" id="down">&#8595;</div>
+        <div class="d-pad" id="right">&#8594;</div>
+    </div>
+
+    <script>
+        // --- NAVIGATION LOGIC ---
+        const menuScreen = document.getElementById("menu-screen");
+        const snakeScreen = document.getElementById("snake-screen");
+        const sudokuScreen = document.getElementById("sudoku-screen");
+        const dpad = document.getElementById("mobile-dpad");
+        const statusMsg = document.getElementById("status-msg");
+
+        let activeGame = null;
+
+        function loadGame(game) {
+            menuScreen.style.display = "none";
+            if (game === 'snake') {
+                snakeScreen.style.display = "block";
+                activeGame = 'snake';
+                statusMsg.innerText = "Module loaded... Play SNAKE.SYS";
+                statusMsg.style.color = "var(--accent)";
+                if (window.innerWidth <= 768) dpad.style.display = "grid";
+                drawSnakeInitial();
+            } else if (game === 'sudoku') {
+                sudokuScreen.style.display = "block";
+                activeGame = 'sudoku';
+                dpad.style.display = "none";
+                initSudoku('easy');
+            }
+        }
+
+        function backToMenu() {
+            snakeScreen.style.display = "none";
+            sudokuScreen.style.display = "none";
+            dpad.style.display = "none";
+            menuScreen.style.display = "flex";
+            activeGame = null;
+            statusMsg.innerText = "Waiting for server... Select Module";
+            statusMsg.style.color = "var(--accent)";
+            
+            if(gameLoop) { clearInterval(gameLoop); isGameRunning = false; } // Stop snake if running
+            document.getElementById("instructionsSnake").classList.remove("show");
+            document.getElementById("instructionsSudoku").classList.remove("show");
+        }
+
+        // --- INSTRUCTIONS LOGIC ---
+        document.getElementById("infoSnakeBtn").addEventListener("click", function() {
+            const panel = document.getElementById("instructionsSnake");
+            panel.classList.toggle("show");
+            this.innerText = panel.classList.contains("show") ? "[ CLOSE INFO ]" : "[ HOW TO PLAY ]";
+            this.blur();
+        });
+        document.getElementById("infoSudokuBtn").addEventListener("click", function() {
+            const panel = document.getElementById("instructionsSudoku");
+            panel.classList.toggle("show");
+            this.innerText = panel.classList.contains("show") ? "[ CLOSE INFO ]" : "[ HOW TO PLAY ]";
+            this.blur();
+        });
+
+
+        // ==========================================
+        // SNAKE.SYS LOGIC
+        // ==========================================
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+        const startBtn = document.getElementById("startBtn");
+        const scoreEl = document.getElementById("score");
+        const highscoreEl = document.getElementById("highscore");
+
+        const gridSize = 15;
+        const tileCount = canvas.width / gridSize;
+        
+        let snake = [];
+        let dx = 0, dy = 0;
+        let foodX, foodY;
+        let score = 0;
+        let highScore = localStorage.getItem('snakeHighScore') || 0;
+        let gameLoop;
+        let isGameRunning = false;
+
+        highscoreEl.innerText = highScore;
+
+        function drawSnakeInitial() {
+            ctx.fillStyle = "#0a0a0a"; ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "#E7E7E7"; ctx.font = "14px Space Mono"; ctx.textAlign = "center";
+            ctx.fillText("CLICK START TO BOOT", canvas.width / 2, canvas.height / 2);
+            startBtn.innerText = "[ START SYSTEM ]";
+        }
+
+        function initSnake() {
+            snake = [{x: 10, y: 10}];
+            dx = 1; dy = 0; 
+            score = 0; scoreEl.innerText = score;
+            placeFood();
+            isGameRunning = true;
+            startBtn.innerText = "[ RESTART ]";
+            document.getElementById("instructionsSnake").classList.remove("show");
+            document.getElementById("infoSnakeBtn").innerText = "[ HOW TO PLAY ]";
+            if(gameLoop) clearInterval(gameLoop);
+            gameLoop = setInterval(updateSnake, 100);
+            startBtn.blur();
+        }
+
+        function updateSnake() {
+            const head = {x: snake[0].x + dx, y: snake[0].y + dy};
+
+            if (head.x < 0 || head.x >= tileCount || head.y < 0 || head.y >= tileCount) { gameOverSnake(); return; }
+            for (let i = 0; i < snake.length; i++) {
+                if (head.x === snake[i].x && head.y === snake[i].y) { gameOverSnake(); return; }
+            }
+
+            snake.unshift(head); 
+
+            if (head.x === foodX && head.y === foodY) {
+                score += 10; scoreEl.innerText = score;
+                if(score > highScore) {
+                    highScore = score; highscoreEl.innerText = highScore;
+                    localStorage.setItem('snakeHighScore', highScore);
+                }
+                placeFood();
+            } else { snake.pop(); }
+            drawSnake();
+        }
+
+        function drawSnake() {
+            ctx.fillStyle = "#0a0a0a"; ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = "#1a1a1a";
+            for(let i=0; i<canvas.width; i+=gridSize) {
+                ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, canvas.height); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(canvas.width, i); ctx.stroke();
+            }
+            ctx.fillStyle = "#E7E7E7"; ctx.fillRect(foodX * gridSize, foodY * gridSize, gridSize - 1, gridSize - 1);
+            ctx.fillStyle = "#8A7BFE"; 
+            for (let i = 0; i < snake.length; i++) { ctx.fillRect(snake[i].x * gridSize, snake[i].y * gridSize, gridSize - 1, gridSize - 1); }
+        }
+
+        function placeFood() {
+            foodX = Math.floor(Math.random() * tileCount);
+            foodY = Math.floor(Math.random() * tileCount);
+            for(let part of snake) {
+                if(part.x === foodX && part.y === foodY) { placeFood(); break; }
+            }
+        }
+
+        function gameOverSnake() {
+            clearInterval(gameLoop); isGameRunning = false;
+            ctx.fillStyle = "rgba(18, 18, 18, 0.8)"; ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "#F93324"; ctx.font = "20px Space Mono"; ctx.textAlign = "center";
+            ctx.fillText("SYSTEM CRASHED", canvas.width / 2, canvas.height / 2);
+            startBtn.innerText = "[ RETRY ]";
+        }
+
+        // Snake Keyboard Controls
+        document.addEventListener("keydown", (e) => {
+            if(activeGame !== 'snake') return;
+            if([32, 37, 38, 39, 40].includes(e.keyCode)) { if (isGameRunning) e.preventDefault(); }
+            if (!isGameRunning && e.key !== "Enter") return;
+            
+            const LEFT = 37, UP = 38, RIGHT = 39, DOWN = 40, W = 87, A = 65, S = 83, D = 68; 
+            
+            if ((e.keyCode === LEFT || e.keyCode === A) && dx !== 1) { dx = -1; dy = 0; }
+            if ((e.keyCode === UP || e.keyCode === W) && dy !== 1) { dx = 0; dy = -1; }
+            if ((e.keyCode === RIGHT || e.keyCode === D) && dx !== -1) { dx = 1; dy = 0; }
+            if ((e.keyCode === DOWN || e.keyCode === S) && dy !== -1) { dx = 0; dy = 1; }
+            
+            if(e.key === "Enter" && !isGameRunning) initSnake();
+        });
+
+        const addMobileControl = (id, newDx, newDy, preventDx, preventDy) => {
+            const btn = document.getElementById(id);
+            ['touchstart', 'mousedown'].forEach(evt => {
+                btn.addEventListener(evt, (e) => {
+                    e.preventDefault();
+                    if (activeGame === 'snake' && dx !== preventDx && dy !== preventDy) { dx = newDx; dy = newDy; }
+                });
+            });
+        };
+        addMobileControl('up', 0, -1, 0, 1); addMobileControl('down', 0, 1, 0, -1);
+        addMobileControl('left', -1, 0, 1, 0); addMobileControl('right', 1, 0, -1, 0);
+
+
+        // ==========================================
+        // SUDOKU.SYS LOGIC
+        // ==========================================
+        const boardEl = document.getElementById("sudoku-board");
+        let solutionBoard = [];
+        let puzzleBoard = [];
+
+        function isValidSudoku(board, row, col, num) {
+            for (let x = 0; x < 9; x++) {
+                if (board[row][x] == num || board[x][col] == num || 
+                    board[3 * Math.floor(row / 3) + Math.floor(x / 3)][3 * Math.floor(col / 3) + x % 3] == num) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        function fillSudoku(board) {
+            for (let i = 0; i < 9; i++) {
+                for (let j = 0; j < 9; j++) {
+                    if (board[i][j] == 0) {
+                        let nums = [1,2,3,4,5,6,7,8,9].sort(() => Math.random() - 0.5);
+                        for (let num of nums) {
+                            if (isValidSudoku(board, i, j, num)) {
+                                board[i][j] = num;
+                                if (fillSudoku(board)) return true;
+                                board[i][j] = 0;
+                            }
+                        }
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
+        function removeDigits(board, count) {
+            let b = JSON.parse(JSON.stringify(board));
+            let attempts = count;
+            while (attempts > 0) {
+                let cellId = Math.floor(Math.random() * 81);
+                let i = Math.floor(cellId / 9);
+                let j = cellId % 9;
+                if (b[i][j] !== 0) {
+                    b[i][j] = 0;
+                    attempts--;
+                }
+            }
+            return b;
+        }
+
+        function initSudoku(difficulty) {
+            document.getElementById('btnEasy').classList.toggle('active', difficulty === 'easy');
+            document.getElementById('btnMedium').classList.toggle('active', difficulty === 'medium');
+            statusMsg.innerText = "System loaded. Awaiting manual input...";
+            statusMsg.style.color = "var(--accent)";
+
+            solutionBoard = Array.from({length: 9}, () => Array(9).fill(0));
+            fillSudoku(solutionBoard);
+            
+            let holes = difficulty === 'easy' ? 30 : 45; 
+            puzzleBoard = removeDigits(solutionBoard, holes);
+
+            renderSudokuBoard();
+        }
+
+        function renderSudokuBoard() {
+            boardEl.innerHTML = "";
+            for (let i = 0; i < 9; i++) {
+                for (let j = 0; j < 9; j++) {
+                    let cell = document.createElement("input");
+                    cell.type = "text"; cell.maxLength = "1"; cell.className = "sudoku-cell";
+                    cell.dataset.row = i; cell.dataset.col = j;
+                    cell.inputMode = "numeric"; // Pops up number keypad on mobile
+
+                    if (j === 2 || j === 5) cell.classList.add("border-right-thick");
+                    if (i === 2 || i === 5) cell.classList.add("border-bottom-thick");
+
+                    if (puzzleBoard[i][j] !== 0) {
+                        cell.value = puzzleBoard[i][j]; cell.classList.add("fixed"); cell.readOnly = true;
+                    } else {
+                        cell.addEventListener("input", function(e) {
+                            this.value = this.value.replace(/[^1-9]/g, '');
+                            this.classList.remove("error");
+                        });
+                    }
+                    boardEl.appendChild(cell);
+                }
+            }
+        }
+
+        function checkSudoku() {
+            let inputs = document.querySelectorAll(".sudoku-cell");
+            let isComplete = true; let hasError = false;
+
+            inputs.forEach(input => {
+                input.classList.remove("error");
+                let r = parseInt(input.dataset.row); let c = parseInt(input.dataset.col);
+                
+                if (input.value === "") { isComplete = false; } 
+                else if (parseInt(input.value) !== solutionBoard[r][c]) {
+                    input.classList.add("error"); hasError = true;
+                }
+            });
+
+            if (hasError) {
+                statusMsg.innerText = "[ ERROR DETECTED: INVALID DATA BLOCKS ]"; statusMsg.style.color = "var(--error)";
+            } else if (!isComplete) {
+                statusMsg.innerText = "[ SYSTEM INCOMPLETE: FILL ALL BLOCKS ]"; statusMsg.style.color = "#E7E7E7";
+            } else {
+                statusMsg.innerText = "[ SYSTEM RESTORED: SUDOKU SOLVED! ]"; statusMsg.style.color = "#00ff41";
+            }
+        }
+
+    </script>
+</body>
+</html>
