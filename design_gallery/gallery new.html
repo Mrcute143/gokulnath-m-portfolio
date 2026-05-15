@@ -1,0 +1,1279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Immersive Design Gallery </title>
+    <link rel="shortcut icon" href="/img/WEBP/g logo.webp" type="image/x-icon">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=Space+Mono&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-color: #292929;
+            --text-primary: #E7E7E7;
+            --accent: #8A7BFE;
+            --video-bg: rgba(18, 18, 18, 0.95);
+        }
+
+        /* LIGHT MODE VARIABLES */
+        body.light-mode {
+            --bg-color: #E7E7E7;
+            --text-primary: #1E1E1E;
+            --accent: #6C5CE7;
+            --video-bg: rgba(230, 230, 230, 0.95);
+        }
+
+        body, html {
+            margin: 0; padding: 0; width: 100%; height: 100%;
+            background-color: var(--bg-color); 
+            background-image: url('/VintageDust\ \(3\).jpg'); 
+            background-size: cover; background-position: center;
+            background-attachment: fixed; background-repeat: no-repeat;
+            
+            color: var(--text-primary);
+            font-family: 'Space Grotesk', sans-serif;
+            overflow-x: hidden; overflow-y: auto; 
+            user-select: none; 
+            cursor: none; 
+            transition: background-color 0.5s ease, color 0.5s ease, --accent 0.3s ease;
+        }
+
+        a, button, img, .clickable-img, .media-wrapper, .close-btn, .video-overlay, .carousel-nav { cursor: none !important; }
+        .preview-content { cursor: auto !important; }
+        
+        /* =========================================
+           BRUTALIST PRE-LOADER
+           ========================================= */
+        #preloader {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: #111; z-index: 999999;
+            display: flex; justify-content: center; align-items: center; flex-direction: column;
+            color: var(--accent); font-family: 'Space Mono', monospace;
+            font-size: 2.5rem; text-transform: uppercase;
+            transition: transform 0.8s cubic-bezier(0.77, 0, 0.175, 1);
+        }
+        #preloader.hidden { transform: translateY(-100%); }
+
+        /* =========================================
+           MINIMAL SCROLL PROGRESS LINE
+           ========================================= */
+        #scroll-progress {
+            position: fixed; top: 0; left: 0; width: 0%; height: 4px;
+            background: var(--accent); z-index: 1000000;
+            transition: width 0.1s ease-out, background-color 0.3s;
+        }
+
+        /* =========================================
+           CUSTOM GRAIN EFFECT
+           ========================================= */
+        .grain-overlay {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            pointer-events: none; z-index: 9998; opacity: 0.1; 
+            background-image: url('YOUR_CUSTOM_GRAIN_IMAGE.png'); 
+            background-size: cover; 
+            animation: grainAnim 0.5s steps(5) infinite;
+        }
+        body.light-mode .grain-overlay { opacity: 0.3; filter: invert(1); }
+        @keyframes grainAnim { 0% { transform: translate(0, 0); } 20% { transform: translate(-1%, 1%); } 40% { transform: translate(1%, -1%); } 60% { transform: translate(-1%, -1%); } 80% { transform: translate(1%, 1%); } 100% { transform: translate(0, 0); } }
+
+        /* =========================================
+           CUSTOM INTERACTIVE CURSOR
+           ========================================= */
+        .custom-cursor {
+            position: fixed; top: 0; left: 0; width: 15px; height: 15px;
+            background: var(--accent); border-radius: 50%; 
+            pointer-events: none !important; 
+            z-index: 99999999; /* 🔴 HIGHEST Z-INDEX FIX: Pop-up overlay thadukkathirikkan */
+            transform: translate(-50%, -50%);
+            transition: width 0.3s cubic-bezier(0.25, 1, 0.5, 1), height 0.3s cubic-bezier(0.25, 1, 0.5, 1), background 0.3s, opacity 0.2s ease;
+            display: flex; justify-content: center; align-items: center;
+            font-family: 'Space Mono', monospace; font-size: 14px; font-weight: bold;
+            color: #1E1E1E; mix-blend-mode: difference; opacity: 1;
+        }
+        .custom-cursor.hovered { width: 80px; height: 80px; background: var(--text-primary); mix-blend-mode: normal; }
+        body.light-mode .custom-cursor { color: #E7E7E7; }
+
+        /* =========================================
+           VERTICAL GLASSMORPHISM BADGES
+           ========================================= */
+        @keyframes badgeSlideIn { 0% { opacity: 0; transform: translate(-30px, -50%); } 100% { opacity: 1; transform: translate(0, -50%); } }
+        .badge-wrapper { position: absolute; left: 2vw; top: 50%; transform: translateY(-50%); z-index: 60; opacity: 0; animation: badgeSlideIn 0.8s forwards 1.5s; }
+   
+        /* =========================================
+        VERTICAL GLASSMORPHISM BADGES (BRAVE/CHROME FIX)
+        ========================================= */
+        .section-badge { 
+            writing-mode: vertical-rl; 
+            
+            /* GPU Fix lines for Brave/Chrome */
+            transform: rotate(180deg) translateZ(0) !important; 
+            backface-visibility: hidden;
+            will-change: transform, backdrop-filter;
+            
+            /* Circular button la irukka same dark background & blur */
+            background: rgba(41, 41, 41, 0.6) !important; 
+            backdrop-filter: blur(5px) !important; 
+            -webkit-backdrop-filter: blur(5px) !important; 
+            
+            border: 1px solid var(--accent); 
+            color: var(--text-primary); 
+            padding: 20px 10px; 
+            font-family: 'Space Mono', monospace; 
+            font-size: 0.85rem; 
+            letter-spacing: 3px; 
+            text-transform: uppercase; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3); 
+            border-radius: 4px; 
+            transition: all 0.5s ease; 
+        }
+
+        body.light-mode .section-badge { 
+            background: rgba(230, 230, 230, 0.6) !important; 
+            border: 1px solid var(--accent); 
+            color: #1E1E1E; 
+        }
+
+        /* =========================================
+        CIRCULAR ROTATING BUTTON CSS
+        ========================================= */
+        @keyframes cardFadeUp { 0% { opacity: 0; transform: translateY(50px); } 100% { opacity: 1; transform: translateY(0); } }
+        
+        .circular-jump-btn {
+            cursor: pointer;
+            background: rgba(41, 41, 41, 0.6);
+            backdrop-filter: blur(5px);
+            border: 1px solid var(--accent);
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: grid;
+            place-content: center;
+            transition: background 0.3s, transform 0.2s, border 0.5s;
+            z-index: 9999;
+            font-family: 'Space Mono', monospace;
+        }
+
+        body.light-mode .circular-jump-btn { background: rgba(230, 230, 230, 0.6); }
+        .circular-jump-btn:hover { background: var(--accent); transform: scale(1.05); }
+
+        .button__text { position: absolute; inset: 0; margin: 0; animation: text-rotation 10s linear infinite; }
+        .button__text span {
+            position: absolute;
+            transform: rotate(calc((360deg / var(--total)) * var(--index)));
+            inset: 4px;
+            font-size: 0.65rem;
+            color: var(--text-primary);
+            text-transform: uppercase;
+        }
+
+        body.light-mode .button__text span { color: #1E1E1E; }
+        .circular-jump-btn:hover .button__text span { color: #1E1E1E; }
+
+        .button__circle {
+            position: relative;
+            width: 38px;
+            height: 38px;
+            overflow: hidden;
+            background: var(--accent);
+            color: #1E1E1E;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), background 0.3s, color 0.3s;
+        }
+
+        .button__circle.flip-up { transform: rotate(-180deg); }
+        .circular-jump-btn:hover .button__circle { background: #1E1E1E; color: var(--accent); }
+
+        .button__icon { width: 18px; height: 18px; position: absolute; }
+        .button__icon--copy { transform: translateY(-150%); }
+
+        .circular-jump-btn:hover .button__icon:first-child { transition: transform 0.3s ease-in-out; transform: translateY(150%); }
+        .circular-jump-btn:hover .button__icon--copy { transition: transform 0.3s ease-in-out 0.1s; transform: translateY(0); }
+
+        @keyframes text-rotation { to { transform: rotate(360deg); } }
+
+        /* =========================================
+           SECTION 1: PHOTO GALLERY
+           ========================================= */
+        .photo-section { height: 78vh; width: 100vw; position: relative; padding-top: 50px; box-sizing: border-box; z-index: 10; }
+        #galleryContainer { display: flex; align-items: center; gap: 80px; padding-left: 10vw; height: 100%; width: 100%; overflow-x: auto; overflow-y: hidden; perspective: 1500px; -ms-overflow-style: none; scrollbar-width: none; }
+        #galleryContainer::after { content: ''; flex: 0 0 10vw; }
+        #galleryContainer::-webkit-scrollbar { display: none; }
+
+        .project-card { display: flex; flex-direction: row; align-items: center; gap: 20px; flex-shrink: 0; opacity: 0; animation: cardFadeUp 0.8s forwards 1.2s; --skew-val: 0deg; transform: skewX(var(--skew-val)); scale: 1; transition: scale 0.4s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.4s ease, filter 0.4s ease; }
+        .project-card:nth-child(1) { animation-delay: 1.2s; } .project-card:nth-child(2) { animation-delay: 1.3s; } .project-card:nth-child(3) { animation-delay: 1.4s; } .project-card:nth-child(4) { animation-delay: 1.5s; } .project-card:nth-child(5) { animation-delay: 1.6s; }
+
+        #galleryContainer:has(.project-card:hover) .project-card:hover { scale: 1.05; z-index: 50; }
+        .project-card:hover .media-wrapper { box-shadow: 0 20px 50px rgba(0,0,0,0.5), 0 0 40px color-mix(in srgb, var(--accent) 40%, transparent), 0 0 90px color-mix(in srgb, var(--accent) 15%, transparent); }
+
+        .media-wrapper { position: relative; width: auto; max-width: 40vw; height: auto; max-height: 50vh; box-shadow: 0 15px 35px rgba(0,0,0,0.3); filter: grayscale(100%); transition: filter 0.3s ease, transform 0.2s ease-out; transform-style: preserve-3d; }
+        .media-wrapper:hover { filter: grayscale(0%); }
+        .media-wrapper img { width: 100%; height: 100%; max-height: 50vh; object-fit: contain; display: block; }
+
+        .project-info { display: flex; flex-direction: column; justify-content: center; padding: 10px; max-width: 250px; }
+        .project-info h2 { margin: 10px 0 5px 0; font-size: 1.5rem; text-transform: uppercase; line-height: 1.1; cursor: default; transition: color 0.3s; }
+        .sub-text-option { font-size: 0.85rem; color: #aaa; margin: 0; line-height: 1.4; transition: color 0.3s; }
+        .project-card:hover .project-info h2 { color: var(--accent); }
+        .project-card:hover .sub-text-option { color: var(--text-primary); }
+
+        /* =========================================
+           DIVIDER SECTION
+           ========================================= */
+        .section-divider { width: 100%; background-color: var(--accent); color: #1E1E1E; padding: 15px 0; font-family: 'Space Mono', monospace; font-weight: bold; font-size: 1.2rem; letter-spacing: 2px; text-transform: uppercase; border-top: 2px solid var(--text-primary); border-bottom: 2px solid var(--text-primary); display: flex; overflow: hidden; white-space: nowrap; transition: background-color 0.3s ease, border-color 0.5s; }
+        body.light-mode .section-divider { border-color: #1E1E1E; }
+        .marquee-content { display: inline-block; animation: marquee 25s linear infinite; }
+        @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+        /* =========================================
+           SECTION 2: VIDEO GALLERY
+           ========================================= */
+        .video-section { width: 100%; min-height: 100vh; padding: 100px 10vw; background-color: var(--video-bg); backdrop-filter: blur(5px); color: var(--text-primary); position: relative; z-index: 10; box-sizing: border-box; border-top: 1px solid rgba(255,255,255,0.1); transition: background-color 0.5s ease; }
+        body.light-mode .video-section { border-top: 1px solid rgba(0,0,0,0.1); }
+        .video-grid { display: flex; flex-direction: column; gap: 100px; margin-top: 50px; }
+        .video-card { width: 100%; max-width: 1000px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; transition: opacity 0.4s ease, filter 0.4s ease, transform 0.4s; }
+
+        .video-grid:has(.video-card:hover) .video-card:hover { filter: drop-shadow(0 0 55px color-mix(in srgb, var(--accent) 40%, transparent)); }
+
+        .iframe-wrapper { position: relative; width: 100%; padding-top: 56.25%; background: #111; box-shadow: 0 25px 50px rgba(0,0,0,0.5); filter: grayscale(100%); transition: filter 0.4s ease, transform 0.4s cubic-bezier(0.25, 1, 0.5, 1); border: 1px solid rgba(255,255,255,0.05); }
+        .video-card:hover .iframe-wrapper { filter: grayscale(0%); transform: scale(1.02); border-color: var(--accent); }
+        .iframe-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+        .video-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; background: transparent; }
+
+        .video-info { display: flex; gap: 15px; align-items: center; }
+        .video-num { font-family: 'Space Mono', monospace; color: var(--accent); font-size: 1rem; transition: color 0.3s; }
+        .video-title { font-size: 1.5rem; text-transform: uppercase; letter-spacing: 1px; margin: 0; transition: color 0.3s; }
+        .video-card:hover .video-title { color: var(--accent); }
+
+        /* =========================================
+        LIGHTBOX PREVIEW
+        ========================================= */
+        #previewOverlay { 
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; 
+            background: rgba(15, 15, 15, 0.85); backdrop-filter: blur(15px); z-index: 9999; 
+            display: flex; flex-direction: column; justify-content: center; align-items: center; 
+            opacity: 0; pointer-events: none; visibility: hidden; 
+            transition: opacity 0.4s ease, visibility 0.4s; 
+        }
+        body.light-mode #previewOverlay { background: rgba(230, 230, 230, 0.85); }
+
+        #previewOverlay.active { opacity: 1; pointer-events: auto; visibility: visible; transition: opacity 0.4s ease, visibility 0s; }
+
+        .preview-content { display: flex; flex-direction: column; align-items: center; justify-content: center; transform: translateY(20px) scale(0.95); transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1); width: auto; pointer-events: auto; }
+        #previewOverlay.active .preview-content { transform: translateY(0) scale(1); }
+
+        #previewImg { max-width: 90vw; max-height: 75vh; margin: 0 auto; object-fit: contain; box-shadow: 0 20px 50px rgba(0,0,0,0.5); border: 1px solid rgba(255, 255, 255, 0.1); pointer-events: auto; }
+        body.light-mode #previewImg { border-color: rgba(0, 0, 0, 0.1); }
+        .preview-text-box { text-align: center; margin-top: 20px; pointer-events: auto;}
+        #previewTitle { margin: 0; font-size: 2rem; text-transform: uppercase; color: var(--text-primary); }
+        #previewSub { margin: 5px 0 0 0; font-size: 1rem; color: var(--accent); font-family: 'Space Mono', monospace; transition: color 0.3s; }
+
+        .close-btn { position: absolute; top: 30px; right: 40px; font-size: 2.5rem; color: var(--text-primary); transition: transform 0.2s ease-out, color 0.3s; line-height: 1; z-index: 10001; padding: 10px; }
+        .close-btn:hover { color: var(--accent); }
+
+        /* =========================================
+           LIGHTBOX CAROUSEL NAVIGATION
+           ========================================= */
+        .carousel-nav {
+            position: absolute; top: 0; height: 100vh; width: 40vw; z-index: 10000;
+            display: none; align-items: center; justify-content: center;
+            color: rgba(255, 255, 255, 0.1); font-size: 2.5rem; transition: color 0.3s;
+        }
+        body.light-mode .carousel-nav { color: rgba(0,0,0,0.1); }
+        .carousel-nav:hover { color: var(--text-primary); }
+        body.light-mode .carousel-nav:hover { color: #1E1E1E; }
+        
+        .prev-btn { left: -10%; } .next-btn { right: -10%; }
+        .preview-counter { font-family: 'Space Mono', monospace; color: var(--accent); margin-top: 15px; font-size: 1rem; display: none; letter-spacing: 2px; transition: color 0.3s; pointer-events: auto; }
+
+        /* =========================================
+        BRUTALIST TEXT HIGHLIGHT
+        ========================================= */
+        ::selection { background: var(--accent); color: #1E1E1E; }
+        ::-moz-selection { background: var(--accent); color: #1E1E1E; }
+
+        /* =========================================
+        INFO / USER GUIDE OVERLAY (NEW)
+        ========================================= */
+        .info-overlay {
+            position: fixed; top: 0; right: -100%; width: 100vw; max-width: 450px; height: 100vh;
+            background: rgba(18, 18, 18, 0.95); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            z-index: 100000; border-left: 2px solid var(--accent);
+            transition: right 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            padding: 80px 40px; overflow-y: auto; color: var(--text-primary);
+            font-family: 'Space Mono', monospace; box-sizing: border-box;
+        }
+        body.light-mode .info-overlay { background: rgba(230, 230, 230, 0.95); }
+
+        .info-overlay.active { right: 0; }
+
+        .info-title { font-size: 2rem; color: var(--accent); margin-top: 0; margin-bottom: 40px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; }
+        body.light-mode .info-title { border-bottom-color: rgba(0,0,0,0.1); }
+
+        .info-section { margin-bottom: 30px; }
+        .info-section h3 { font-size: 1.2rem; margin: 0 0 10px 0; color: var(--text-primary); font-family: 'Space Grotesk', sans-serif;}
+        .info-section p { font-size: 0.85rem; line-height: 1.6; opacity: 0.8; margin: 0; }
+
+        /* =========================================
+        MOBILE & SYSTEM POPUPS
+        ========================================= */
+        .brutalist-popup-overlay {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(15, 15, 15, 0.95); backdrop-filter: blur(10px);
+            z-index: 9999999; display: none; justify-content: center; align-items: center;
+        }
+        .brutalist-popup-box {
+            background: var(--bg-color); border: 2px solid var(--text-primary);
+            padding: 30px; width: 85%; max-width: 400px; text-align: center;
+            box-shadow: 10px 10px 0px var(--accent); transition: box-shadow 0.3s ease, background-color 0.5s;
+        }
+        body.light-mode .brutalist-popup-box { border-color: #1E1E1E; }
+        .popup-title { font-size: 1.5rem; text-transform: uppercase; margin-top: 0; border-bottom: 2px solid var(--accent); padding-bottom: 10px; color: var(--text-primary); }
+        body.light-mode .popup-title { color: #1E1E1E; }
+        .popup-text { font-family: 'Space Mono', monospace; font-size: 0.9rem; margin: 20px 0; line-height: 1.5; color: var(--text-primary); }
+        body.light-mode .popup-text { color: #1E1E1E; }
+        .popup-actions { display: flex; justify-content: space-between; gap: 15px; margin-top: 25px; }
+        .popup-btn {
+            background: transparent; color: var(--text-primary); border: 1px solid var(--text-primary);
+            padding: 10px; font-family: 'Space Mono', monospace; font-size: 1rem; transition: all 0.3s; width: 100%; text-transform: uppercase;
+        }
+        .popup-btn:hover { background: var(--text-primary); color: var(--bg-color); }
+        body.light-mode .popup-btn { color: #1E1E1E; border-color: #1E1E1E; }
+        body.light-mode .popup-btn:hover { background: #1E1E1E; color: #E7E7E7; }
+        .proceed-btn { border-color: var(--accent); color: var(--accent); margin-top: 15px; }
+        .proceed-btn:hover { background: var(--accent); color: #1E1E1E; }
+        .hidden { display: none !important; }
+
+        /* =========================================
+        ULTIMATE TOUCH & MOBILE FIX
+        ========================================= */
+        @media (hover: none) and (pointer: coarse) {
+            body, html, a, button, img, .clickable-img, .media-wrapper, .close-btn, .video-overlay, .carousel-nav, .nav-zone { cursor: auto !important; }
+            .custom-cursor { display: none !important; }
+            .media-wrapper { filter: grayscale(0%) !important; transform: none !important; }
+            .project-card, .project-card:hover { transform: none !important; scale: 1 !important; filter: none !important; }
+            .video-overlay { display: none !important; pointer-events: none !important; }
+            .iframe-wrapper { filter: grayscale(0%) !important; transform: none !important; }
+        }
+
+        /* =========================================
+        EDITORIAL GRID HEADER STYLES
+        ========================================= */
+        .editorial-header {
+            display: grid; grid-template-columns: auto 1fr auto; width: 100%;
+            border-bottom: 2px solid #1E1E1E; background-color: transparent;
+        }
+        .header-box { padding: 15px 25px; display: flex; align-items: center; justify-content: center; border-right: 2px solid #1E1E1E; }
+        .header-box:last-child { border-right: none; }
+        
+        .logo-box { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 8px; }
+        .digital-clock { position: relative !important; top: auto !important; right: auto !important; font-family: 'Space Mono', monospace; font-size: 0.75rem; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; margin: 0; }
+        .controls-box { justify-content: flex-end; gap: 10px; flex-wrap: nowrap !important; }
+        .logo-text { font-weight: 800; font-size: 1rem; letter-spacing: 1px; text-decoration: none; color: inherit; }
+        .role-text { font-family: monospace; font-size: 0.8rem; letter-spacing: 2px; text-transform: uppercase; margin: 0; }
+        .control-btn { background: transparent; color: var(--text-primary); border: 1px solid var(--text-primary); padding: 8px 15px; font-family: 'Space Mono', monospace; font-size: 0.8rem; text-transform: uppercase; transition: all 0.3s, border-color 0.5s; white-space: nowrap !important; flex-shrink: 0; }
+
+     /* =========================================
+        BOTTOM-RIGHT CIRCULAR EXPANSION ANIMATION 
+        ========================================= */
+        .fill-btn { position: relative; overflow: hidden; z-index: 1; background: transparent !important; }
+        .fill-btn::before { content: ''; position: absolute; z-index: -1; background: var(--text-primary); height: 150px; width: 200px; border-radius: 50%; top: 100%; left: 100%; transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1); }
+        .fill-btn:hover::before { top: -30px; left: -30px; }
+        .control-btn.fill-btn:hover { color: var(--bg-color) !important; }
+        body.light-mode .control-btn.fill-btn::before { background: #1E1E1E; }
+        body.light-mode .control-btn.fill-btn:hover { color: #E7E7E7 !important; }
+
+        /* =========================================
+        HEADER STAGGERED IN-ANIMATION
+        ========================================= */
+        @keyframes headerReveal { 0% { opacity: 0; transform: translateY(-20px); } 100% { opacity: 1; transform: translateY(0); } }
+        .editorial-header .header-box { opacity: 0; transform: translateY(-20px); }
+        .header-box.animate-in { animation: headerReveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+        /* =========================================
+        BRUTALIST FOOTER
+        ========================================= */
+        .brutalist-footer {
+            border-top: 2px solid #1E1E1E; padding: 40px 10vw; display: flex; justify-content: space-between; align-items: center;
+            font-family: 'Space Mono', monospace; font-size: 0.85rem; background: var(--video-bg); color: var(--text-primary);
+            z-index: 10; position: relative; flex-wrap: wrap; gap: 20px; transition: background-color 0.5s ease;
+        }
+        body.light-mode .brutalist-footer { border-top-color: rgba(0,0,0,0.1); }
+        .footer-link { color: var(--accent); text-decoration: none; transition: color 0.3s, background 0.3s; border: 1px solid var(--accent); padding: 10px 15px; cursor: none !important; }
+        .footer-link:hover { background: var(--accent); color: #1E1E1E; }
+        .footer-info { text-transform: uppercase; letter-spacing: 1px; line-height: 1.6; }
+
+        /* =========================================
+        MOBILE RESPONSIVE FIXES
+        ========================================= */
+        @media (max-width: 768px) {
+            .editorial-header { grid-template-columns: 1fr; border-bottom: 2px solid #1E1E1E; }
+            .header-box { border-right: none; border-bottom: 1px solid #1E1E1E; justify-content: center; padding: 10px; width: 100%; box-sizing: border-box; }
+            .header-box:last-child { border-bottom: none; }
+            .logo-box { align-items: center; order: 3; } .role-box { order: 1; } .controls-box { order: 2; flex-wrap: wrap; } 
+            .role-box h2.logo-text { font-size: 1.2rem !important; }
+            .logo-box .role-text { font-size: 0.65rem; letter-spacing: 1px; }
+            .controls-box .control-btn { font-size: 0.65rem; padding: 6px 10px; flex: 1 1 auto; text-align: center; }
+            
+            .circular-jump-btn { width: 75px; height: 75px; bottom: 120px; right: 20px; }
+            .button__circle { width: 32px; height: 32px; }
+            .button__text span { font-size: 0.55rem; inset: 2px; }
+            .section-badge { font-size: 0.6rem; padding: 15px 8px; }
+            .carousel-nav { width: 25vw; }
+            .brutalist-footer { flex-direction: column; text-align: center; }
+            .footer-info { text-align: center !important; }
+            .info-overlay { width: 100vw; max-width: 100vw; padding: 60px 25px; border-left: none; }
+        }
+
+
+        /* =========================================
+   EXPANDING ICON BUTTONS & INDICATOR
+   ========================================= */
+.controls-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px; /* Space between buttons and indicator */
+}
+
+.controls-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: nowrap !important;
+}
+
+.feature-indicator {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.55rem;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    opacity: 0.8;
+}
+
+.expanding-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 6px !important; /* Circle shape initially */
+    padding: 0 !important;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    overflow: hidden;
+    transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.5s;
+    background: transparent;
+    border: 1px solid var(--text-primary);
+}
+
+/* Icon Box inside the button */
+.expanding-btn .icon {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.expanding-btn .icon svg {
+    width: 16px;
+    height: 16px;
+    stroke: currentColor;
+}
+
+/* Hidden Text */
+.expanding-btn .text {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem;
+    padding-right: 18px;
+    opacity: 0;
+    transform: translateX(-10px);
+    transition: opacity 0.3s, transform 0.3s;
+    font-weight: bold;
+}
+
+/* Hover Expansion */
+.expanding-btn:hover {
+    width: 105px; /* Expands the pill */
+}
+
+.expanding-btn:hover .text {
+    opacity: 1;
+    transform: translateX(0);
+    transition-delay: 0.1s; /* Text reveals slightly after expanding starts */
+}
+
+/* Mobile Tweak for swipeability */
+@media (max-width: 768px) {
+    .controls-container { align-items: center; width: 100%; }
+    .controls-row { overflow-x: auto; width: 100%; justify-content: flex-start; padding-bottom: 5px;}
+    .controls-row::-webkit-scrollbar { display: none; }
+    .feature-indicator { margin-top: 5px; }
+}
+
+    </style>
+</head>
+<body>
+
+    <div id="preloader"><div id="loader-text">ARCHIVE.LOADING [<span id="loader-perc">0</span>%]</div></div>
+    <div id="scroll-progress"></div>
+    <div class="grain-overlay"></div>
+    <div class="custom-cursor" id="customCursor"><span id="cursorText"></span></div>
+
+    <header class="editorial-header">
+        <div class="header-box logo-box">
+            <span class="role-text" id="status-text">[//SCROLL UP/DOWN TO NAVIGATE]</span>
+            <div id="digital-clock" class="digital-clock"></div>
+        </div>
+        
+        <div class="header-box role-box">
+            <h2 class="logo-text" style="margin: 0; font-size: 1.5rem;"> DESIGN GALLERY</h2>
+        </div>
+
+        <div class="header-box controls-box">
+            <div class="controls-container">
+                <div class="controls-row">
+                    <button id="info-toggle" class="control-btn expanding-btn fill-btn">
+                        <span class="icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                        </span>
+                        <span class="text">INFO</span>
+                    </button>
+                    
+                    <button id="audio-toggle" class="control-btn expanding-btn fill-btn">
+                        <span class="icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+                        </span>
+                        <span class="text">AUDIO</span>
+                    </button>
+                    
+                    <button id="color-chameleon" class="control-btn expanding-btn fill-btn">
+                        <span class="icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path></svg>
+                        </span>
+                        <span class="text">HUE</span>
+                    </button>
+                    
+                    <button id="theme-toggle" class="control-btn expanding-btn fill-btn">
+                        <span class="icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a10 10 0 0 0 0 20z"></path></svg>
+                        </span>
+                        <span class="text">INVERT</span>
+                    </button>
+                </div>
+                <!-- <span class="feature-indicator">/// SYSTEM FEATURES &uarr;</span> -->
+            </div>
+        </div>
+    </header>
+
+    <button id="jumpToVideo" class="circular-jump-btn magnetic-element interactive-btn">
+        <p class="button__text" id="circular-text"></p>
+        <div class="button__circle" id="arrow-rotator">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="button__icon">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <polyline points="19 12 12 19 5 12"></polyline>
+            </svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="button__icon button__icon--copy">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <polyline points="19 12 12 19 5 12"></polyline>
+            </svg>
+        </div>
+    </button>
+
+    <section class="photo-section" id="photoSection">
+        <div class="badge-wrapper"><div class="section-badge">[//PHOTO.ARCHIVE]</div></div>
+        <div id="galleryContainer">
+            
+            <div class="project-card">
+                <div class="media-wrapper clickable-img tilt-card" data-img="/Design_Gallery/assets/WEBP/Flipkart_design_ad_poster.webp">
+                    <img src="/Design_Gallery/assets/WEBP/Flipkart_design_ad_poster.webp" alt="Project 001">
+                </div>
+                <div class="project-info"><span class="meta-text">(001)</span><h2 class="card-title">Ad Creative</h2><p class="sub-text-option">//CORPORATE SHIPPED • [STATIC]</p></div>
+            </div>
+
+            <div class="project-card">
+                <div class="media-wrapper clickable-img tilt-card" data-img="/Design_Gallery/assets/WEBP/Calender_Design_SKC1.webp,/Design_Gallery/assets/WEBP/Calender_Design_SKC2.webp">
+                    <img src="/Design_Gallery/assets/WEBP/Calender_Design_SKC1.webp" alt="Project 002">
+                </div>
+                <div class="project-info"><span class="meta-text">(002)</span><h2 class="card-title">Calender Design<br>[print]</h2><p class="sub-text-option">//CORPORATE SHIPPED • [SLIDES]</p></div>
+            </div>
+
+            <div class="project-card">
+                <div class="media-wrapper clickable-img tilt-card" data-img="/Design_Gallery/assets/WEBP/Maxxion-1.webp">
+                    <img src="/Design_Gallery/assets/WEBP/Maxxion-1.webp" alt="Project 003">
+                </div>
+                <div class="project-info"><span class="meta-text">(003)</span><h2 class="card-title">Ad Creative<br>[social media]</h2><p class="sub-text-option">//FREELANCE SHIPPED • [STATIC]</p></div>
+            </div>
+            
+            <div class="project-card">
+                <div class="media-wrapper clickable-img tilt-card" data-img="/Design_Gallery/assets/WEBP/Perfume Poster_1.webp">
+                    <img src="/Design_Gallery/assets/WEBP/Perfume Poster_1.webp" alt="Project 004">
+                </div>
+                <div class="project-info"><span class="meta-text">(004)</span><h2 class="card-title">Ad Creative</h2><p class="sub-text-option">//CONCEPTUAL DESIGN • [STATIC]</p></div>
+            </div>
+
+            <div class="project-card">
+                <div class="media-wrapper clickable-img tilt-card" data-img="/Design_Gallery/assets/WEBP/SBR-1.webp,/Design_Gallery/assets/WEBP/SBR-2.webp">
+                    <img src="/Design_Gallery/assets/WEBP/SBR-1.webp" alt="Project 005">
+                </div>
+                <div class="project-info"><span class="meta-text">(005)</span><h2 class="card-title">Ad Creative<br>[Social Media]</h2><p class="sub-text-option">//FREELANCE SHIPPED • [SLIDES]</p></div>
+            </div>
+
+            <div class="project-card">
+                <div class="media-wrapper clickable-img tilt-card" data-img="/Design_Gallery/assets/WEBP/Ad Creative.webp">
+                    <img src="/Design_Gallery/assets/WEBP/Ad Creative.webp" alt="Project 006">
+                </div>
+                <div class="project-info"><span class="meta-text">(006)</span><h2 class="card-title">Ad Creative<br>[Meta Ad]</h2><p class="sub-text-option">//CONCEPTUAL DESIGN • [STATIC]</p></div>
+            </div>
+
+            <div class="project-card">
+                <div class="media-wrapper clickable-img tilt-card" data-img="/Design_Gallery/assets/WEBP/Van_ad_Design_GN.webp">
+                    <img src="/Design_Gallery/assets/WEBP/Van_ad_Design_GN.webp" alt="Project 007">
+                </div>
+                <div class="project-info"><span class="meta-text">(007)</span><h2 class="card-title">Vehicle AD. DESIGN<br>[print]</h2><p class="sub-text-option">//CORPORATE SHIPPED • [STATIC]</p></div>
+            </div>
+
+            <div class="project-card">
+                <div class="media-wrapper clickable-img tilt-card" data-img="/Design_Gallery/assets/WEBP/Breadcrumb-D5.webp,/Design_Gallery/assets/WEBP/Breadcrumb-D3.webp">
+                    <img src="/Design_Gallery/assets/WEBP/Breadcrumb-D5.webp" alt="Project 008">
+                </div>
+                <div class="project-info"><span class="meta-text">(008)</span><h2 class="card-title">Social Media<br>Poster</h2><p class="sub-text-option">//CONCEPTUAL DESIGN • [SLIDES]</p></div>
+            </div>
+
+            <div class="project-card">
+                <div class="media-wrapper clickable-img tilt-card" data-img="/Design_Gallery/assets/WEBP/Skills Cafe_Cheat_Sheet_1.webp,/Design_Gallery/assets/WEBP/Skills_ cafe_Cheat_Sheet_2.webp">
+                    <img src="/Design_Gallery/assets/WEBP/Skills Cafe_Cheat_Sheet_1.webp" alt="Project 009">
+                </div>
+                <div class="project-info"><span class="meta-text">(009)</span><h2 class="card-title">Social Media<br>Cheat Sheet</h2><p class="sub-text-option">//CORPORATE SHIPPED • [SLIDES]</p></div>
+            </div>
+
+            <div class="project-card">
+                <div class="media-wrapper clickable-img tilt-card" data-img="/Design_Gallery/assets/WEBP/Future Roots - B3.webp">
+                    <img src="/Design_Gallery/assets/WEBP/Future Roots - B3.webp" alt="Project 010">
+                </div>
+                <div class="project-info"><span class="meta-text">(010)</span><h2 class="card-title">Ad. Creative</h2><p class="sub-text-option">//CONCEPTUAL DESIGN • [STATIC]</p></div>
+            </div>
+
+            <div class="project-card">
+                <div class="media-wrapper clickable-img tilt-card" data-img="/Design_Gallery/assets/WEBP/Slide-1.jpg,/Design_Gallery/assets/WEBP/Slide-2.jpg,/Design_Gallery/assets/WEBP/Slide-3.jpg,/Design_Gallery/assets/WEBP/Slide-4.jpg,/Design_Gallery/assets/WEBP/Slide-5.jpg">
+                    <img src="/Design_Gallery/assets/WEBP/Slide-1.jpg" alt="Project 011">
+                </div>
+                <div class="project-info"><span class="meta-text">(011)</span><h2 class="card-title">Social Media<br>Design</h2><p class="sub-text-option">//FREELANCE SHIPPED • [CAROUSEL]</p></div>
+            </div>
+            
+            <div class="project-card">
+                <div class="media-wrapper clickable-img tilt-card" data-img="/Design_Gallery/assets/WEBP/Chritmas website banner.webp,/Design_Gallery/assets/WEBP/Cashew Crunch TM_logo.webp,/Design_Gallery/assets/WEBP/Cheese makana Email banner.webp">
+                    <img src="/Design_Gallery/assets/WEBP/Chritmas website banner.webp" alt="Project 012">
+                </div>
+                <div class="project-info"><span class="meta-text">(012)</span><h2 class="card-title">Email AD<br>Creative</h2><p class="sub-text-option">//CORPORATE SHIPPED • [SLIDES]</p></div>
+            </div>
+
+            <div class="project-card">
+                <div class="media-wrapper clickable-img tilt-card" data-img="/Design_Gallery/assets/WEBP/Codegama-4.webp,/Design_Gallery/assets/WEBP/Codegama-3.webp">
+                    <img src="/Design_Gallery/assets/WEBP/Codegama-4.webp" alt="Project 013">
+                </div>
+                <div class="project-info"><span class="meta-text">(013)</span><h2 class="card-title">Social Media Creative DESIGN</h2><p class="sub-text-option">//CONCEPTUAL DESIGN • [SLIDES]</p></div>
+            </div>
+
+            <div class="project-card">
+                <div class="media-wrapper clickable-img tilt-card" data-img="/Design_Gallery/assets/WEBP/plum.webp,/Design_Gallery/assets/WEBP/Peanut Punch_logo-2.webp,/Design_Gallery/assets/WEBP/Salty Sweet TM_logo-2.webp,/Design_Gallery/assets/WEBP/Story Poster_GN_1.webp">
+                    <img src="/Design_Gallery/assets/WEBP/plum.webp" alt="Project 014">
+                </div>
+                <div class="project-info"><span class="meta-text">(014)</span><h2 class="card-title">Photo Creative<br>[Social Media]</h2><p class="sub-text-option">//CORPORATE SHIPPED • [SLIDES]</p></div>
+            </div>
+
+            <div class="project-card">
+                <div class="media-wrapper clickable-img tilt-card" data-img="/Design_Gallery/assets/WEBP/f2.jpg,/Design_Gallery/assets/WEBP/f1.jpg">
+                    <img src="/Design_Gallery/assets/WEBP/f2.jpg" alt="Project 015">
+                </div>
+                <div class="project-info"><span class="meta-text">(015)</span><h2 class="card-title">Performance AD<br>DESIGN</h2><p class="sub-text-option">//FREELANCE SHIPPED • [SLIDES]</p></div>
+            </div>
+
+            <div class="project-card">
+                <div class="media-wrapper clickable-img tilt-card" data-img="/Design_Gallery/assets/WEBP/Goingnuts Main Page_C.webp">
+                    <img src="/Design_Gallery/assets/WEBP/Goingnuts Main Page_C.webp" alt="Project 016">
+                </div>
+                <div class="project-info"><span class="meta-text">(016)</span><h2 class="card-title">Website Design<br>[Visual layout]</h2><p class="sub-text-option">//CONCEPTUAL DESIGN • [STATIC]</p></div>
+            </div>
+
+            <div class="project-card">
+                <div class="media-wrapper clickable-img tilt-card" data-img="/Design_Gallery/assets/WEBP/whitestone.webp">
+                    <img src="/Design_Gallery/assets/WEBP/whitestone.webp" alt="Project 017">
+                </div>
+                <div class="project-info"><span class="meta-text">(017)</span><h2 class="card-title">Social Media<br>Poster</h2><p class="sub-text-option">//FREELANCE SHIPPED • [SLIDES]</p></div>
+            </div>
+
+            <div class="project-card">
+                <div class="media-wrapper clickable-img tilt-card" data-img="/Design_Gallery/assets/WEBP/GN_Shop Here Card Design_page_2.webp,/Design_Gallery/assets/WEBP/saffron event.webp">
+                    <img src="/Design_Gallery/assets/WEBP/GN_Shop Here Card Design_page_2.webp" alt="Project 018">
+                </div>
+                <div class="project-info"><span class="meta-text">(018)</span><h2 class="card-title">Printing Board/Card<br>Design</h2><p class="sub-text-option">//CORPORATE SHIPPED • [SLIDES]</p></div>
+            </div>
+            
+            <div class="project-card">
+                <div class="media-wrapper clickable-img tilt-card" data-img="/Design_Gallery/assets/WEBP/Desktop - 2.jpg">
+                    <img src="/Design_Gallery/assets/WEBP/Desktop - 2.jpg" alt="Project 019">
+                </div>
+                <div class="project-info"><span class="meta-text">(019)</span><h2 class="card-title">D2C Brand Dashboard<br>[Visual layout]</h2><p class="sub-text-option">//CONCEPTUAL DESIGN • [STATIC]</p></div>
+            </div>
+
+            <div class="project-card">
+                <div class="media-wrapper clickable-img tilt-card" data-img="/Design_Gallery/assets/WEBP/F-1.webp,/Design_Gallery/assets/WEBP/F-2.webp,/Design_Gallery/assets/WEBP/F-3.webp,/Design_Gallery/assets/WEBP/F-4.webp">
+                    <img src="/Design_Gallery/assets/WEBP/F-1.webp" alt="Project 020">
+                </div>
+                <div class="project-info"><span class="meta-text">(020)</span><h2 class="card-title">Character Identity Swap<br>[AI Integeration]</h2><p class="sub-text-option">//CONCEPTUAL DESIGN • [SLIDES]</p></div>
+            </div>
+
+            <div class="project-card">
+                <div class="media-wrapper clickable-img tilt-card" data-img="/Design_Gallery/assets/WEBP/Skills_Cafe_ LI_poster_2.webp,/Design_Gallery/assets/WEBP/LI_poster-3_SKC.webp">
+                    <img src="/Design_Gallery/assets/WEBP/Skills_Cafe_ LI_poster_2.webp" alt="Project 021">
+                </div>
+                <div class="project-info"><span class="meta-text">(021)</span><h2 class="card-title">Social Media<br>Poster</h2><p class="sub-text-option">//CORPORATE SHIPPED • [SLIDES]</p></div>
+            </div>
+
+            
+            <div class="project-card">
+                <div class="media-wrapper clickable-img tilt-card" data-img="/Design_Gallery/assets/WEBP/Final.webp,/Design_Gallery/assets/WEBP/Rec_Billboard_Mockup.webp">
+                    <img src="/Design_Gallery/assets/WEBP/Final.webp" alt="Project 022">
+                </div>
+                <div class="project-info"><span class="meta-text">(022)</span><h2 class="card-title">Bill Board Design<br>[Visual & Mockup]</h2><p class="sub-text-option">//FREELANCE SHIPPED • [SLIDES]</p></div>
+            </div>
+            
+            <div class="project-card">
+                <div class="media-wrapper clickable-img tilt-card" data-img="/Design_Gallery/assets/WEBP/kazam_design_2025.webp">
+                    <img src="/Design_Gallery/assets/WEBP/kazam_design_2025.webp" alt="Project 023">
+                </div>
+                <div class="project-info"><span class="meta-text">(023)</span><h2 class="card-title">Meta Ad <br>Creative</h2><p class="sub-text-option">//FREELANCE SHIPPED • [STATIC]</p></div>
+            </div>
+            
+            <div class="project-card">
+                <div class="media-wrapper clickable-img tilt-card" data-img="/Design_Gallery/assets/WEBP/Tin Sticker for GN_page-0001.webp,/Design_Gallery/assets/WEBP/Label_print_design.webp">
+                    <img src="/Design_Gallery/assets/WEBP/Tin Sticker for GN_page-0001.webp" alt="Project 024">
+                </div>
+                <div class="project-info"><span class="meta-text">(024)</span><h2 class="card-title">Printing Sticker Design</h2><p class="sub-text-option">//CORPORATE SHIPPED • [SLIDES]</p></div>
+            </div>
+            
+            <div class="project-card">
+                <div class="media-wrapper clickable-img tilt-card" data-img="/Design_Gallery/assets/WEBP/OFB Board-Final 2.webp">
+                    <img src="/Design_Gallery/assets/WEBP/OFB Board-Final 2.webp" alt="Project 025">
+                </div>
+                <div class="project-info"><span class="meta-text">(025)</span><h2 class="card-title">Printing Board/Card<br>Design</h2><p class="sub-text-option">//CORPORATE SHIPPED • [SLIDES]</p></div>
+            </div>
+            <div class="project-card">
+                <div class="media-wrapper clickable-img tilt-card" data-img="/Design_Gallery/assets/WEBP/protein_poster_2024.webp">
+                    <img src="/Design_Gallery/assets/WEBP/protein_poster_2024.webp" alt="Project 026">
+                </div>
+                <div class="project-info"><span class="meta-text">(026)</span><h2 class="card-title">Social Media<br>[Ad. Creative]</h2><p class="sub-text-option">//CONCEPTUAL DESIGN • [STATIC]</p></div>
+            </div>
+            
+            <div class="project-card">
+                <div class="media-wrapper clickable-img tilt-card" data-img="/Design_Gallery/assets/WEBP/Final Unit_BLR.webp">
+                    <img src="/Design_Gallery/assets/WEBP/Final Unit_BLR.webp" alt="Project 027">
+                </div>
+                <div class="project-info"><span class="meta-text">(027)</span><h2 class="card-title">Sticker Label Design<br>[print & digital]</h2><p class="sub-text-option">//FREELANCE SHIPPED • [STATIC]</p></div>
+            </div>
+            
+            <div class="project-card">
+                <div class="media-wrapper clickable-img tilt-card" data-img="/Design_Gallery/assets/WEBP/Goingnuts Product Catalogue_compressed_page_1.webp,/Design_Gallery/assets/WEBP/Goingnuts Product Catalogue_compressed_page_2.webp,/Design_Gallery/assets/WEBP/Goingnuts Product Catalogue_compressed_page_3.webp,/Design_Gallery/assets/WEBP/Goingnuts Product Catalogue_compressed_page_14.webp">
+                    <img src="/Design_Gallery/assets/WEBP/Goingnuts Product Catalogue_compressed_page_1.webp" alt="Project 028">
+                </div>
+                <div class="project-info"><span class="meta-text">(028)</span><h2 class="card-title">Catalogue Design</h2><p class="sub-text-option">//CORPORATE SHIPPED • [SLIDES]</p></div>
+            </div>
+    
+            <div class="project-card">
+                <div class="media-wrapper clickable-img tilt-card" data-img="/Design_Gallery/assets/WEBP/Maamms Baby Shower-2.webp">
+                    <img src="/Design_Gallery/assets/WEBP/Maamms Baby Shower-2.webp" alt="Project 029">
+                </div>
+                <div class="project-info"><span class="meta-text">(029)</span><h2 class="card-title">Invitation Design<br>[print & digital]</h2><p class="sub-text-option">//FREELANCE SHIPPED • [STATIC]</p></div>
+            </div>
+    
+            <div class="project-card">
+                <div class="media-wrapper clickable-img tilt-card" data-img="/Design_Gallery/assets/WEBP/Divine AUG-2025-2.webp">
+                    <img src="/Design_Gallery/assets/WEBP/Divine AUG-2025-2.webp" alt="Project 030">
+                </div>
+                <div class="project-info"><span class="meta-text">(030)</span><h2 class="card-title">Visual Storytelling<br></h2><p class="sub-text-option">//SOLO PRODUCTION • [STATIC]</p></div>
+            </div>
+
+        </div>
+    </section>
+
+    <div class="section-divider">
+        <div class="marquee-content">/// VIDEO.ARCHIVE /// SCROLL DOWN /// VIDEO.ARCHIVE /// SCROLL DOWN /// VIDEO.ARCHIVE /// SCROLL DOWN /// VIDEO.ARCHIVE /// SCROLL DOWN /// VIDEO.ARCHIVE /// SCROLL DOWN /// VIDEO.ARCHIVE /// SCROLL DOWN /// VIDEO.ARCHIVE /// SCROLL DOWN /// VIDEO.ARCHIVE /// SCROLL DOWN ///</div>
+    </div>
+
+    <section class="video-section" id="videoSection">
+        <div class="badge-wrapper"><div class="section-badge">[//VIDEO.ARCHIVE]</div></div>
+        <div class="video-grid">
+        
+        <div class="video-card">
+            <div class="iframe-wrapper interactive-btn">
+              <div class="video-overlay custom-cursor-trigger" data-cursor="PLAY"></div>
+              <iframe src="https://www.linkedin.com/embed/feed/update/urn:li:ugcPost:7361974443885154305?compact=1" height="399" width="504" frameborder="0" allowfullscreen="" title="Embedded post"></iframe>
+            </div>
+            <div class="video-info"><span class="video-num">(V.001)</span><h3 class="video-title">Portfolio Case</h3></div>
+        </div>
+
+        <div class="video-card">
+            <div class="iframe-wrapper interactive-btn">
+                <div class="video-overlay custom-cursor-trigger" data-cursor="PLAY"></div>
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/cKNBeIjiMrM?si=y5QJroR2cxhQqNJg" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+            </div>
+            <div class="video-info"><span class="video-num">(V.002)</span><h3 class="video-title">Portfolio Case</h3></div>
+        </div>
+        
+        <div class="video-card">
+            <div class="iframe-wrapper interactive-btn">
+                <div class="video-overlay custom-cursor-trigger" data-cursor="PLAY"></div>
+                <iframe src="https://www.linkedin.com/embed/feed/update/urn:li:ugcPost:7367143405111390209?compact=1" height="399" width="504" frameborder="0" allowfullscreen="" title="Embedded post"></iframe>
+            </div>
+            <div class="video-info"><span class="video-num">(V.003)</span><h3 class="video-title">Portfolio Case</h3></div>
+        </div>
+        
+        <div class="video-card">
+            <div class="iframe-wrapper interactive-btn">
+                <div class="video-overlay custom-cursor-trigger" data-cursor="PLAY"></div>
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/0sfh33wlR4c?si=2gK080uWwRuqK7lC" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+            </div>
+            <div class="video-info"><span class="video-num">(V.004)</span><h3 class="video-title">Portfolio Case</h3></div>
+          </div>
+        
+        <div class="video-card">
+            <div class="iframe-wrapper interactive-btn">
+                <div class="video-overlay custom-cursor-trigger" data-cursor="PLAY"></div>
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/D4qmjmu6P_0?si=gVLgSP1fNNGyo1q1" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+            </div>
+            <div class="video-info"><span class="video-num">(V.005)</span><h3 class="video-title">Portfolio Case</h3></div>
+          </div>
+        
+          <div class="video-card">
+            <div class="iframe-wrapper interactive-btn">
+                <div class="video-overlay custom-cursor-trigger" data-cursor="PLAY"></div>
+                <iframe width="315" height="560" src="https://www.youtube.com/embed/4m3jduE7f6s" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+            </div>
+            <div class="video-info"><span class="video-num">(V.006)</span><h3 class="video-title">Portfolio Case</h3></div>
+          </div>
+          
+          <div class="video-card">
+            <div class="iframe-wrapper interactive-btn">
+                <div class="video-overlay custom-cursor-trigger" data-cursor="PLAY"></div>
+                </div>
+            <div class="video-info"><span class="video-num">(V.00)</span><h3 class="video-title">More Video will Update Soon</h3></div>
+          </div>
+
+
+        </div>
+    </section>
+
+    <footer class="brutalist-footer">
+        <div class="footer-info">
+            <span>// ARCHIVE.SYS</span><br>
+            <span style="opacity: 0.5;">DESIGNED & DEVELOPED BY GOKULNATH M</span>
+        </div>
+        
+        <a href="/" class="footer-link magnetic-element interactive-btn">[ RETURN TO MAIN ARCHIVE ]</a>
+        
+        <div class="footer-info" style="text-align: right;">
+            <span>STATUS: ONLINE</span><br>
+            <span style="opacity: 0.5; color: var(--accent);">LAST UPDATED: MAY 2026</span>
+        </div>
+    </footer>
+
+    <div id="infoOverlay" class="info-overlay">
+        <div class="close-btn magnetic-element custom-cursor-trigger" data-cursor="CLOSE" id="closeInfo">&times;</div>
+        <div class="info-content">
+            <h2 class="info-title">SYSTEM.GUIDE //</h2>
+            
+            <div class="info-section">
+                <h3>[ INTERACTION ]</h3>
+                <p>Scroll horizontally or use your mouse wheel to navigate the archive. Click any project card to open the high-resolution preview.</p>
+            </div>
+
+            <div class="info-section">
+                <h3>[ TAG: STATIC ]</h3>
+                <p>Represents a singular, high-impact asset like poster art or branding identity. Immediate load with maximum pixel clarity.</p>
+            </div>
+
+            <div class="info-section">
+                <h3>[ TAG: SLIDES ]</h3>
+                <p>Signals an interactive multi-asset project. Use keyboard arrows (Left/Right) in the preview mode to explore variations.</p>
+            </div>
+
+            <div class="info-section">
+                <h3>[ SHORTCUTS ]</h3>
+                <p><b>'C' Key:</b> Toggle Accent Color<br><b>'Esc' Key:</b> Close Previews<br><b>Arrows:</b> Navigate Galleries</p>
+            </div>
+            
+            <div class="info-section">
+                <h3>[ RELIABILITY ]</h3>
+                <p>The immersive experience depends on your system's rendering capability and network speed for high-res images. Please wait for the initial load.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="previewOverlay">
+        <div class="close-btn magnetic-element custom-cursor-trigger" data-cursor="CLOSE" id="closePreview">&times;</div>
+        
+        <div class="carousel-nav prev-btn custom-cursor-trigger" data-cursor="PREV" id="prevSlide">&#8592;</div>
+        <div class="carousel-nav next-btn custom-cursor-trigger" data-cursor="NEXT" id="nextSlide">&#8594;</div>
+
+        <div class="preview-content">
+            <img id="previewImg" src="" alt="Preview Full">
+            <div id="previewCounter" class="preview-counter">1 / 3</div>
+            <div class="preview-text-box">
+                <h2 id="previewTitle">TITLE</h2>
+                <p id="previewSub">SUBTEXT</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="mobile-warning-popup" class="brutalist-popup-overlay">
+        <div class="brutalist-popup-box">
+            <h2 class="popup-title">DEVICE CHECK</h2>
+            <p id="popup-question" class="popup-text">Are you viewing on a Laptop/Desktop?</p>
+            
+            <div id="popup-buttons" class="popup-actions">
+                <button id="btn-yes" class="popup-btn magnetic-element interactive-btn">[ YES ]</button>
+                <button id="btn-no" class="popup-btn magnetic-element interactive-btn">[ NO ]</button>
+            </div>
+
+            <div id="popup-message" class="popup-message hidden">
+                <p class="popup-text">For the best immersive experience, please use a Desktop or Laptop.</p>
+                <button id="btn-proceed" class="popup-btn proceed-btn magnetic-element interactive-btn">[ PROCEED ANYWAY ]</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="performance-warning-popup" class="brutalist-popup-overlay">
+        <div class="brutalist-popup-box">
+            <h2 class="popup-title">SYSTEM NOTICE</h2>
+            <p class="popup-text" style="text-align: left;">
+                <span style="color: var(--accent);">// INFO:</span><br><br>
+                Loading times for high-resolution images and visual effects may vary based on your system performance and network reliability.<br><br>
+                Please allow a moment for the full immersive experience.
+            </p>
+            <div class="popup-actions">
+                <button id="btn-perf-ok" class="popup-btn magnetic-element interactive-btn">[ OK, UNDERSTOOD ]</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /* =========================================
+           AUDIO SETUP 
+           ========================================= */
+        const sfxHover = new Audio('./assets/soundreality-pop-423717.mp');
+        const sfxClick = new Audio('https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3');
+        sfxHover.volume = 0.1; sfxClick.volume = 0.6; let audioUnlocked = false;
+        document.body.addEventListener('click', () => { audioUnlocked = true; }, {once: true});
+
+        function playHover() { 
+            if(audioUnlocked && !isAudioMuted) { 
+                sfxHover.currentTime = 0; 
+                sfxHover.play().catch(()=>{}); 
+            } 
+        }
+
+        function playClick() { 
+            if(audioUnlocked && !isAudioMuted) { 
+                sfxClick.currentTime = 0; 
+                sfxClick.play().catch(()=>{}); 
+            } 
+        }
+
+        /* =========================================
+           BRUTALIST PRE-LOADER
+           ========================================= */
+        let count = 0; const loaderPerc = document.getElementById('loader-perc'); const preloader = document.getElementById('preloader');
+        let loaderInterval = setInterval(() => {
+            count += Math.floor(Math.random() * 15) + 5; if(count > 100) count = 100; loaderPerc.innerText = count;
+            if(count === 100) { clearInterval(loaderInterval); setTimeout(() => { preloader.classList.add('hidden'); }, 400); }
+        }, 100);
+
+        /* =========================================
+           LIVE CLOCK
+           ========================================= */
+        function updateClock() {
+            const now = new Date(); const days = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']; const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+            let hours = now.getHours(); const ampm = hours >= 12 ? 'PM' : 'AM'; hours = hours % 12; hours = hours ? hours : 12; 
+            const timeString = `[ ${days[now.getDay()]}, ${months[now.getMonth()]} ${now.getDate().toString().padStart(2, '0')}, ${now.getFullYear()} | ${hours.toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')} ${ampm} ]`;
+            const clockElement = document.getElementById('digital-clock'); if(clockElement) clockElement.innerText = timeString;
+        } setInterval(updateClock, 1000); updateClock();
+
+        /* =========================================
+           CHAMELEON ACCENT SWITCHER
+           ========================================= */
+        const rootOptions = document.documentElement.style;
+        const accents = ['#8A7BFE', '#f7fff7', '#00FFFF', '#FF8C00', '#ADC178', '#FFA5AB', '#7dcfb6', '#ffcb77']; let accentIndex = 0;
+        function changeAccent() { playClick(); accentIndex = (accentIndex + 1) % accents.length; rootOptions.setProperty('--accent', accents[accentIndex]); }
+        document.getElementById('color-chameleon').addEventListener('click', changeAccent);
+        document.addEventListener('keydown', (e) => { if (e.key.toLowerCase() === 'c' && !overlay.classList.contains('active')) changeAccent(); });
+
+        /* =========================================
+           INVERT TOGGLE
+           ========================================= */
+        document.getElementById('theme-toggle').addEventListener('click', () => { playClick(); document.body.classList.toggle('light-mode'); });
+
+        /* =========================================
+           CUSTOM CURSOR LOGIC
+           ========================================= */
+        const cursor = document.getElementById('customCursor'); const cursorText = document.getElementById('cursorText');
+        document.addEventListener('mousemove', (e) => { cursor.style.left = e.clientX + 'px'; cursor.style.top = e.clientY + 'px'; });
+
+        function setHoverCursor(text) { cursor.classList.add('hovered'); cursorText.innerText = text; playHover(); }
+        function resetHoverCursor() { cursor.classList.remove('hovered'); cursorText.innerText = ""; }
+
+        document.querySelectorAll('.media-wrapper').forEach(el => { el.addEventListener('mouseenter', () => setHoverCursor("VIEW")); el.addEventListener('mouseleave', resetHoverCursor); });
+        
+        document.querySelectorAll('.custom-cursor-trigger').forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                if(el.style.display !== 'none') {
+                    setHoverCursor(el.getAttribute('data-cursor'));
+                    cursor.style.opacity = '1'; 
+                }
+            });
+            el.addEventListener('mouseleave', resetHoverCursor);
+        });
+
+        document.querySelectorAll('.video-overlay').forEach(overlayElement => {
+            overlayElement.addEventListener('click', function() { playClick(); this.style.pointerEvents = 'none'; resetHoverCursor(); });
+        });
+        document.querySelectorAll('.interactive-btn:not(.custom-cursor-trigger)').forEach(btn => { btn.addEventListener('mouseenter', playHover); });
+
+        /* =========================================
+           SCROLL & JUMP BUTTON LOGIC (FIXED ARROW TEXT)
+           ========================================= */
+        const gallery = document.getElementById('galleryContainer');
+        gallery.addEventListener('scroll', () => { document.getElementById('scroll-progress').style.width = ((gallery.scrollLeft / (gallery.scrollWidth - gallery.clientWidth)) * 100) + '%'; });
+        
+       /* =========================================
+   SCROLL & CIRCULAR JUMP BUTTON LOGIC
+   ========================================= */
+const jumpBtn = document.getElementById('jumpToVideo'); 
+const arrowRotator = document.getElementById('arrow-rotator');
+const videoSection = document.getElementById('videoSection'); 
+const photoSection = document.getElementById('photoSection'); 
+let isAtVideo = false;
+
+// 1. Text-ah circle-la split pandra function
+function updateCircularText(text) {
+    const textContainer = document.getElementById('circular-text');
+    if (!textContainer) return;
+    textContainer.style.setProperty('--total', text.length); 
+    textContainer.innerHTML = text.split('').map((char, i) => 
+        `<span style="--index: ${i};">${char}</span>`
+    ).join('');
+}
+
+// 2. Button Click Event
+jumpBtn.addEventListener('click', (e) => { 
+    e.preventDefault(); 
+    if(typeof playClick === "function") playClick(); 
+    
+    if (isAtVideo) {
+        if(photoSection) photoSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        setTimeout(() => { window.scrollTo({ top: 0, behavior: 'smooth' }); }, 50);
+    } else { 
+        if(videoSection) videoSection.scrollIntoView({ behavior: 'smooth', block: 'start' }); 
+    } 
+});
+
+// 3. Scroll Observer (Text Change & Arrow Flip)
+new IntersectionObserver((entries) => { 
+    entries.forEach(entry => { 
+        if (entry.isIntersecting) { 
+            isAtVideo = true; 
+            updateCircularText('• PHOTO ARCHIVE • SCROLL UP   '); 
+            if(arrowRotator) arrowRotator.classList.add('flip-up'); 
+        } else { 
+            isAtVideo = false; 
+            updateCircularText('• VIDEO ARCHIVE • SCROLL DOWN '); 
+            if(arrowRotator) arrowRotator.classList.remove('flip-up'); 
+        } 
+    }); 
+}, { root: null, threshold: 0.05 }).observe(videoSection);
+
+        let targetScroll = 0; let currentScroll = 0; let isScrollingAnimation = false; const projectCards = document.querySelectorAll('.project-card');
+        gallery.addEventListener('wheel', (e) => {
+            const maxScroll = gallery.scrollWidth - window.innerWidth;
+            if ((e.deltaY > 0 && targetScroll < maxScroll) || (e.deltaY < 0 && targetScroll > 0)) { e.preventDefault(); targetScroll += e.deltaY * 1.5; targetScroll = Math.max(0, Math.min(targetScroll, maxScroll)); if (!isScrollingAnimation) { isScrollingAnimation = true; smoothScrollAnimation(); } }
+        }, { passive: false });
+        
+        function smoothScrollAnimation() {
+            let velocity = (targetScroll - currentScroll) * 0.08; currentScroll += velocity; gallery.scrollLeft = currentScroll;
+            projectCards.forEach(card => card.style.setProperty('--skew-val', `${Math.max(-12, Math.min(12, velocity * 0.3))}deg`));
+            if (Math.abs(targetScroll - currentScroll) > 0.5) requestAnimationFrame(smoothScrollAnimation); else { isScrollingAnimation = false; projectCards.forEach(card => card.style.setProperty('--skew-val', `0deg`)); }
+        }
+
+        /* =========================================
+           LIGHTBOX CAROUSEL LOGIC
+           ========================================= */
+        const overlay = document.getElementById('previewOverlay'); const previewImg = document.getElementById('previewImg'); const previewTitle = document.getElementById('previewTitle'); const previewSub = document.getElementById('previewSub'); const closeBtn = document.getElementById('closePreview');
+        const prevBtn = document.getElementById('prevSlide'); const nextBtn = document.getElementById('nextSlide'); const previewCounter = document.getElementById('previewCounter');
+        let currentGallery = []; let currentIndex = 0;
+
+        function updateCarouselUI() {
+            previewImg.src = currentGallery[currentIndex];
+            if (currentGallery.length > 1) { prevBtn.style.display = 'flex'; nextBtn.style.display = 'flex'; previewCounter.style.display = 'block'; previewCounter.innerText = `0${currentIndex + 1} / 0${currentGallery.length}`; } 
+            else { prevBtn.style.display = 'none'; nextBtn.style.display = 'none'; previewCounter.style.display = 'none'; }
+        }
+
+        document.querySelectorAll('.media-wrapper.clickable-img').forEach(wrapper => {
+            wrapper.addEventListener('click', (e) => {
+                if (Math.abs(gallery.scrollLeft - targetScroll) > 5) return; 
+                playClick();
+                currentGallery = wrapper.getAttribute('data-img').split(',').map(img => img.trim()); currentIndex = 0;
+                const parentCard = wrapper.closest('.project-card');
+                updateCarouselUI();
+                previewTitle.innerHTML = parentCard.querySelector('.card-title') ? parentCard.querySelector('.card-title').innerHTML.replace(/<br>/g, ' ') : 'UNTITLED';
+                previewSub.textContent = parentCard.querySelector('.sub-text-option') ? parentCard.querySelector('.sub-text-option').textContent : '';
+                
+                overlay.classList.add('active'); 
+                cursor.style.opacity = '1';
+            });
+        });
+
+        nextBtn.addEventListener('click', (e) => { e.stopPropagation(); playClick(); currentIndex = (currentIndex + 1) % currentGallery.length; updateCarouselUI(); });
+        prevBtn.addEventListener('click', (e) => { e.stopPropagation(); playClick(); currentIndex = (currentIndex - 1 + currentGallery.length) % currentGallery.length; updateCarouselUI(); });
+
+        function closePreview() { playClick(); overlay.classList.remove('active'); resetHoverCursor(); }
+        closeBtn.addEventListener('click', closePreview);
+        overlay.addEventListener('click', (e) => { if (e.target === overlay) closePreview(); });
+        document.addEventListener('keydown', (e) => { 
+            if (!overlay.classList.contains('active')) return;
+            if (e.key === 'Escape') closePreview();
+            if (e.key === 'ArrowRight' && currentGallery.length > 1) { playClick(); currentIndex = (currentIndex + 1) % currentGallery.length; updateCarouselUI(); }
+            if (e.key === 'ArrowLeft' && currentGallery.length > 1) { playClick(); currentIndex = (currentIndex - 1 + currentGallery.length) % currentGallery.length; updateCarouselUI(); }
+        });
+
+        /* =========================================
+        MOBILE DEVICE CHECK LOGIC
+        ========================================= */
+        const mobilePopup = document.getElementById('mobile-warning-popup');
+        const btnYes = document.getElementById('btn-yes');
+        const btnNo = document.getElementById('btn-no');
+        const popupButtons = document.getElementById('popup-buttons');
+        const popupMessage = document.getElementById('popup-message');
+        const popupQuestion = document.getElementById('popup-question');
+        const btnProceed = document.getElementById('btn-proceed');
+
+        if (window.innerWidth <= 768) { mobilePopup.style.display = 'flex'; }
+        btnYes.addEventListener('click', () => { playClick(); mobilePopup.style.display = 'none'; });
+        btnNo.addEventListener('click', () => { playClick(); popupButtons.classList.add('hidden'); popupQuestion.classList.add('hidden'); popupMessage.classList.remove('hidden'); });
+        btnProceed.addEventListener('click', () => { playClick(); mobilePopup.style.display = 'none'; });
+
+        /* =========================================
+        PERFORMANCE REMINDER POPUP LOGIC 
+        ========================================= */
+        const perfPopup = document.getElementById('performance-warning-popup');
+        const btnPerfOk = document.getElementById('btn-perf-ok');
+
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                if (mobilePopup && mobilePopup.style.display !== 'none' && window.innerWidth <= 768) {
+                    const checkMobileClosed = setInterval(() => {
+                        if (mobilePopup.style.display === 'none') {
+                            perfPopup.style.display = 'flex';
+                            clearInterval(checkMobileClosed);
+                        }
+                    }, 500);
+                } else {
+                    perfPopup.style.display = 'flex';
+                }
+            }, 2500); 
+        });
+
+        if(btnPerfOk) {
+            btnPerfOk.addEventListener('click', () => { 
+                if(typeof playClick === "function") playClick(); 
+                perfPopup.style.display = 'none'; 
+            });
+        }
+
+        /* =========================================
+        INFO PANEL LOGIC (NEW)
+        ========================================= */
+        const infoToggleBtn = document.getElementById('info-toggle');
+        const infoOverlay = document.getElementById('infoOverlay');
+        const closeInfoBtn = document.getElementById('closeInfo');
+
+        if (infoToggleBtn && infoOverlay && closeInfoBtn) {
+            infoToggleBtn.addEventListener('click', () => {
+                if(typeof playClick === "function") playClick();
+                infoOverlay.classList.add('active');
+            });
+
+            closeInfoBtn.addEventListener('click', () => {
+                if(typeof playClick === "function") playClick();
+                infoOverlay.classList.remove('active');
+                if(typeof resetHoverCursor === "function") resetHoverCursor();
+            });
+        }
+
+
+     /* =========================================
+        GLOBAL AUDIO KILL SWITCH LOGIC (ICON FIXED)
+        ========================================= */
+        const audioToggleBtn = document.getElementById('audio-toggle');
+        let isAudioMuted = false;
+
+        if(audioToggleBtn) {
+            audioToggleBtn.addEventListener('click', () => {
+                isAudioMuted = !isAudioMuted; 
+                const textSpan = audioToggleBtn.querySelector('.text'); // Find the text part
+
+                if (isAudioMuted) {
+                    if(textSpan) textSpan.innerText = 'MUTE'; 
+                    audioToggleBtn.style.color = '#F93324'; 
+                    audioToggleBtn.style.borderColor = '#F93324'; 
+                } else {
+                    if(textSpan) textSpan.innerText = 'AUDIO';
+                    audioToggleBtn.style.color = ''; 
+                    audioToggleBtn.style.borderColor = ''; 
+                    if(typeof playClick === "function") playClick(); 
+                }
+            });
+        }
+
+        /* =========================================
+        "VIEW SOURCE" EASTER EGG (CONSOLE ART)
+        ========================================= */
+        const asciiArt = `
+        ███████╗██╗  ██╗██████╗  ██████╗ ███████╗███████╗██████╗     █████╗ ██████╗  ██████╗██╗  ██╗██╗██╗   ██╗███████╗
+        ██╔════╝╚██╗██╔╝██╔══██╗██╔═══██╗██╔════╝██╔════╝██╔══██╗   ██╔══██╗██╔══██╗██╔════╝██║  ██║██║██║   ██║██╔════╝
+        █████╗   ╚███╔╝ ██████╔╝██║   ██║███████╗█████╗  ██║  ██║   ███████║██████╔╝██║     ███████║██║██║   ██║█████╗  
+        ██╔══╝   ██╔██╗ ██╔═══╝ ██║   ██║╚════██║██╔══╝  ██║  ██║   ██╔══██║██╔══██╗██║     ██╔══██║██║╚██╗ ██╔╝██╔══╝  
+        ███████╗██╔╝ ██╗██║     ╚██████╔╝███████║███████╗██████╔╝   ██║  ██║██║  ██║╚██████╗██║  ██║██║ ╚████╔╝ ███████╗
+        ╚══════╝╚═╝  ╚═╝╚═╝      ╚═════╝ ╚══════╝╚══════╝╚═════╝    ╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝╚═╝  ╚═══╝  ╚══════╝
+                                                                                                                        
+        // WELCOME TO THE ARCHIVE //
+        // DEVELOPER: GOKULNATH M //
+        // STATUS: SYSTEM ONLINE  //
+        `;
+
+        const consoleStyle = ['color: #8A7BFE', 'font-family: monospace', 'font-size: 12px', 'font-weight: bold'].join(';');
+        const messageStyle = ['color: #E7E7E7', 'font-family: monospace', 'font-size: 14px'].join(';');
+
+        console.log('%c' + asciiArt, consoleStyle);
+        console.log('%cIf you are reading this, you know your way around code. Welcome.', messageStyle);
+
+        /* =========================================
+        HEADER ANIMATION TRIGGER
+        ========================================= */
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                const headerBoxes = document.querySelectorAll('.editorial-header .header-box');
+                headerBoxes.forEach((box, index) => {
+                    box.style.animationDelay = `${index * 0.2}s`; 
+                    box.classList.add('animate-in'); 
+                });
+            }, 800); 
+        });
+
+    </script>
+</body>
+</html>
