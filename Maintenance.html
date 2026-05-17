@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="shortcut icon" href="/img/WEBP/g logo.webp" type="image/x-icon">
     <title>SYSTEM.OFFLINE | Archive Maintenance</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&family=Space+Mono&display=swap" rel="stylesheet">
@@ -16,9 +18,7 @@
             --error: #F93324;
         }
 
-        * {
-            box-sizing: border-box; /* This fixes all layout alignment issues */
-        }
+        * { box-sizing: border-box; }
 
         body, html {
             margin: 0; padding: 0; width: 100%; height: 100%;
@@ -28,8 +28,7 @@
             color: var(--text-primary);
             font-family: 'Space Mono', monospace;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
-            overflow: hidden;
-            user-select: none;
+            overflow: hidden; user-select: none;
         }
 
         /* CUSTOM GRAIN OVERLAY */
@@ -43,8 +42,7 @@
         .marquee-bg {
             position: fixed; width: 100%; background: var(--accent); color: #121212;
             font-weight: bold; padding: 10px 0; top: 0; left: 0; z-index: 100;
-            border-bottom: 2px solid var(--text-primary);
-            display: flex; overflow: hidden;
+            border-bottom: 2px solid var(--text-primary); display: flex; overflow: hidden;
         }
         .marquee-content { display: flex; width: 200%; animation: marquee 40s linear infinite; }
         .marquee-text { white-space: nowrap; font-size: 0.85rem; padding-right: 50px; flex-shrink: 0; }
@@ -61,18 +59,10 @@
 
         /* MAIN CONTAINER */
         .game-wrapper {
-            background: var(--game-bg);
-            border: 2px solid var(--accent);
-            padding: 20px;
-            box-shadow: 10px 10px 0px rgba(138, 123, 254, 0.2);
-            text-align: center;
-            z-index: 10;
-            max-width: 400px;
-            width: 90%;
-            min-height: 450px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
+            background: var(--game-bg); border: 2px solid var(--accent);
+            padding: 20px; box-shadow: 10px 10px 0px rgba(138, 123, 254, 0.2);
+            text-align: center; z-index: 10; max-width: 400px; width: 90%; min-height: 450px;
+            display: flex; flex-direction: column; justify-content: center;
         }
 
         /* BRUTALIST BUTTONS */
@@ -93,14 +83,16 @@
         .menu-screen { display: flex; flex-direction: column; gap: 15px; }
         .menu-title { font-size: 1.1rem; color: var(--text-primary); margin-bottom: 10px; letter-spacing: 1px; }
 
-        /* SNAKE SPECIFIC */
+        /* SCORE BOARD */
         .score-board {
             display: flex; justify-content: space-between; margin-bottom: 15px;
             font-size: 1.2rem; font-weight: bold; border-bottom: 1px dashed #555; padding-bottom: 10px;
         }
+
+        /* SNAKE SPECIFIC */
         canvas { background: #0a0a0a; border: 1px solid #333; display: block; margin: 0 auto; image-rendering: pixelated; width: 300px; height: 300px; }
 
-        /* SUDOKU SPECIFIC (Alignment fixed) */
+        /* SUDOKU SPECIFIC */
         .level-select { display: flex; gap: 10px; margin-bottom: 15px; }
         .btn-level {
             flex: 1; background: transparent; color: var(--text-primary);
@@ -110,38 +102,37 @@
         .btn-level.active { background: var(--text-primary); color: var(--bg-color); border: 1px solid var(--text-primary); font-weight: bold; }
 
         .sudoku-board {
-            display: grid;
-            grid-template-columns: repeat(9, 1fr);
-            grid-template-rows: repeat(9, 1fr);
-            width: 100%;
-            max-width: 320px; /* Perfect square size */
-            aspect-ratio: 1; /* Forces perfect square */
-            margin: 0 auto;
-            border: 2px solid var(--accent);
-            background: #0a0a0a;
+            display: grid; grid-template-columns: repeat(9, 1fr); grid-template-rows: repeat(9, 1fr);
+            width: 100%; max-width: 320px; aspect-ratio: 1; margin: 0 auto; border: 2px solid var(--accent); background: #0a0a0a;
         }
-
         .sudoku-cell {
-            width: 100%;
-            height: 100%;
-            text-align: center;
-            font-family: 'Space Mono', monospace;
-            font-size: 1.2rem;
-            background: transparent;
-            color: #E7E7E7;
-            border: 1px solid #222;
-            outline: none;
-            padding: 0;
-            margin: 0;
-            border-radius: 0; /* Remove default iOS rounding */
-            appearance: none;
+            width: 100%; height: 100%; text-align: center; font-family: 'Space Mono', monospace;
+            font-size: 1.2rem; background: transparent; color: #E7E7E7; border: 1px solid #222;
+            outline: none; padding: 0; margin: 0; border-radius: 0; appearance: none;
         }
         .sudoku-cell:focus { background: rgba(138, 123, 254, 0.2); }
         .sudoku-cell.fixed { color: var(--accent); font-weight: bold; background: #111; pointer-events: none; }
         .sudoku-cell.error { color: var(--error); background: rgba(249, 51, 36, 0.1); }
-
         .border-right-thick { border-right: 2px solid var(--accent) !important; }
         .border-bottom-thick { border-bottom: 2px solid var(--accent) !important; }
+
+        /* DATA.DECRYPT SPECIFIC (MEMORY MATCH) */
+        .decrypt-grid {
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;
+            width: 100%; max-width: 300px; aspect-ratio: 1; margin: 0 auto;
+        }
+        .decrypt-card {
+            background: #111; border: 1px solid var(--accent); cursor: pointer;
+            display: flex; justify-content: center; align-items: center; font-size: 1.5rem;
+            color: transparent; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            font-family: 'Space Grotesk', sans-serif;
+        }
+        .decrypt-card.flipped {
+            background: var(--text-primary); color: #121212; border-color: var(--text-primary); transform: scale(1.05);
+        }
+        .decrypt-card.matched {
+            background: var(--accent); color: #121212; border-color: var(--accent); pointer-events: none;
+        }
 
         /* INSTRUCTIONS PANEL */
         .instructions-panel {
@@ -152,7 +143,21 @@
         .instructions-panel.show { display: block; }
         .instructions-panel span { color: var(--text-primary); }
 
-        /* MOBILE CONTROLS (Only for Snake) */
+        /* FAKE BIOS BOOTUP SCREEN */
+        .bootup-screen {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: #000; color: #E7E7E7; font-family: 'Space Mono', monospace;
+            font-size: 0.85rem; padding: 30px; box-sizing: border-box;
+            z-index: 999999; display: none; overflow-y: auto; text-align: left;
+        }
+        .bootup-screen.active { display: block; }
+        .boot-line { margin-bottom: 6px; opacity: 0; animation: typeLine 0.1s forwards; }
+        .boot-green { color: #00ff41; }
+        .boot-red { color: #F93324; }
+        
+        @keyframes typeLine { to { opacity: 1; } }
+
+        /* MOBILE CONTROLS */
         .mobile-controls {
             display: none; grid-template-columns: 60px 60px 60px; grid-template-rows: 60px 60px;
             gap: 10px; margin-top: 20px; justify-content: center; z-index: 10; touch-action: none;
@@ -171,6 +176,7 @@
         @media (max-width: 768px) {
             .glitch-title { font-size: 2rem; }
             .sudoku-board { max-width: 280px; }
+            .decrypt-grid { max-width: 280px; gap: 8px; }
             .sudoku-cell { font-size: 1rem; }
             canvas { width: 280px; height: 280px; }
             .action-row { flex-direction: column; gap: 10px; }
@@ -188,6 +194,10 @@
 
     <div class="grain-overlay"></div>
 
+    <div id="bootup-screen" class="bootup-screen">
+        <div id="boot-log"></div>
+    </div>
+
     <div class="header-section">
         <h1 class="glitch-title">SYSTEM.OFFLINE</h1>
         <p class="subtitle" id="status-msg">Waiting for server... Select Module</p>
@@ -199,6 +209,7 @@
             <h2 class="menu-title">[ CHOOSE A SYSTEM MODULE ]</h2>
             <button class="btn-action" onclick="loadGame('snake')">[ PLAY SNAKE.SYS ]</button>
             <button class="btn-action" onclick="loadGame('sudoku')">[ PLAY SUDOKU.SYS ]</button>
+            <button class="btn-action" onclick="loadGame('decrypt')">[ DATA.DECRYPT ]</button>
         </div>
 
         <div id="snake-screen" style="display: none;">
@@ -218,8 +229,7 @@
                 > <span>DESKTOP:</span> Use Arrow Keys or W-A-S-D.<br>
                 > <span>MOBILE:</span> Use the D-Pad below.<br>
                 > <span>GOAL:</span> Eat the white data blocks to score.<br>
-                > <span>AVOID:</span> Hitting borders or your own tail.<br>
-                > <span>REBOOT:</span> Press 'Enter' to restart.
+                > <span>AVOID:</span> Hitting borders or your own tail.
             </div>
         </div>
 
@@ -239,10 +249,30 @@
 
             <div id="instructionsSudoku" class="instructions-panel">
                 > <span>GOAL:</span> Fill the 9x9 grid with numbers 1-9.<br>
-                > <span>RULE 1:</span> Each row must contain 1-9 exactly once.<br>
-                > <span>RULE 2:</span> Each column must contain 1-9 exactly once.<br>
-                > <span>RULE 3:</span> Each 3x3 box must contain 1-9 exactly once.<br>
-                > <span>HINT:</span> Click 'CHECK SYSTEM' to verify your input. Wrong numbers will flash red.
+                > <span>RULES:</span> Unique numbers in each row, col, and 3x3 box.<br>
+                > <span>HINT:</span> Click 'CHECK SYSTEM' to verify. <br>
+                > <span class="boot-green">WIN: Resolving the system triggers a reboot.</span>
+            </div>
+        </div>
+
+        <div id="decrypt-screen" style="display: none;">
+            <div class="score-board">
+                <span>MATCHES: <span id="match-score">0</span>/8</span>
+                <span>MOVES: <span id="moves-count">0</span></span>
+            </div>
+
+            <div id="decrypt-grid" class="decrypt-grid"></div>
+            
+            <div class="action-row">
+                <button class="btn-action" onclick="initDecrypt()">[ RESTART ]</button>
+                <button class="btn-action btn-info" id="infoDecryptBtn">[ HOW TO PLAY ]</button>
+            </div>
+            <button class="btn-action" style="border-style: dashed;" onclick="backToMenu()">[ SYSTEM MENU ]</button>
+
+            <div id="instructionsDecrypt" class="instructions-panel">
+                > <span>GOAL:</span> Find all 8 matching data blocks.<br>
+                > <span>ACTION:</span> Click a block to flip it and reveal the code.<br>
+                > <span class="boot-green">WIN: Fully decrypting triggers a reboot.</span>
             </div>
         </div>
 
@@ -260,6 +290,7 @@
         const menuScreen = document.getElementById("menu-screen");
         const snakeScreen = document.getElementById("snake-screen");
         const sudokuScreen = document.getElementById("sudoku-screen");
+        const decryptScreen = document.getElementById("decrypt-screen");
         const dpad = document.getElementById("mobile-dpad");
         const statusMsg = document.getElementById("status-msg");
 
@@ -279,36 +310,175 @@
                 activeGame = 'sudoku';
                 dpad.style.display = "none";
                 initSudoku('easy');
+            } else if (game === 'decrypt') {
+                decryptScreen.style.display = "block";
+                activeGame = 'decrypt';
+                dpad.style.display = "none";
+                statusMsg.innerText = "Decrypting blocks... DATA.DECRYPT";
+                statusMsg.style.color = "var(--accent)";
+                initDecrypt();
             }
         }
 
         function backToMenu() {
             snakeScreen.style.display = "none";
             sudokuScreen.style.display = "none";
+            decryptScreen.style.display = "none";
             dpad.style.display = "none";
             menuScreen.style.display = "flex";
             activeGame = null;
             statusMsg.innerText = "Waiting for server... Select Module";
             statusMsg.style.color = "var(--accent)";
             
-            if(gameLoop) { clearInterval(gameLoop); isGameRunning = false; } // Stop snake if running
-            document.getElementById("instructionsSnake").classList.remove("show");
-            document.getElementById("instructionsSudoku").classList.remove("show");
+            if(gameLoop) { clearInterval(gameLoop); isGameRunning = false; }
+            document.querySelectorAll(".instructions-panel").forEach(p => p.classList.remove("show"));
+            document.querySelectorAll(".btn-info").forEach(b => b.innerText = "[ HOW TO PLAY ]");
         }
 
         // --- INSTRUCTIONS LOGIC ---
-        document.getElementById("infoSnakeBtn").addEventListener("click", function() {
-            const panel = document.getElementById("instructionsSnake");
-            panel.classList.toggle("show");
-            this.innerText = panel.classList.contains("show") ? "[ CLOSE INFO ]" : "[ HOW TO PLAY ]";
-            this.blur();
-        });
-        document.getElementById("infoSudokuBtn").addEventListener("click", function() {
-            const panel = document.getElementById("instructionsSudoku");
-            panel.classList.toggle("show");
-            this.innerText = panel.classList.contains("show") ? "[ CLOSE INFO ]" : "[ HOW TO PLAY ]";
-            this.blur();
-        });
+        function toggleInfo(btnId, panelId) {
+            const btn = document.getElementById(btnId);
+            const panel = document.getElementById(panelId);
+            btn.addEventListener("click", function() {
+                panel.classList.toggle("show");
+                this.innerText = panel.classList.contains("show") ? "[ CLOSE INFO ]" : "[ HOW TO PLAY ]";
+                this.blur();
+            });
+        }
+        toggleInfo("infoSnakeBtn", "instructionsSnake");
+        toggleInfo("infoSudokuBtn", "instructionsSudoku");
+        toggleInfo("infoDecryptBtn", "instructionsDecrypt");
+
+
+        // ==========================================
+        // SYSTEM REBOOT SEQUENCE (FAKE BIOS)
+        // ==========================================
+        function triggerSystemReboot() {
+            const bootScreen = document.getElementById("bootup-screen");
+            const logDiv = document.getElementById("boot-log");
+            bootScreen.classList.add("active");
+            logDiv.innerHTML = "";
+            
+            const bootLines = [
+                "BIOS Date 05/15/26 18:22:10 Ver 2.0.4",
+                "CPU: ARCHIVE.SYS Neural Processor",
+                "Memory Test : 32768K OK",
+                "Mounting virtual drives...",
+                "Decrypting UI modules...",
+                "Bypassing security protocols...",
+                "Analyzing user interactions... <span class='boot-green'>PERFECT</span>",
+                "Restoring Archive index...",
+                "<span class='boot-green'>SYSTEM RESTORED SUCCESSFULLY.</span>",
+                "<span class='boot-red'>Rebooting in 3... 2... 1...</span>"
+            ];
+
+            let delay = 500;
+            bootLines.forEach((line, index) => {
+                setTimeout(() => {
+                    logDiv.innerHTML += `<div class="boot-line">${line}</div>`;
+                    bootScreen.scrollTop = bootScreen.scrollHeight; // Auto scroll down
+                    
+                    if (index === bootLines.length - 1) {
+                        setTimeout(() => location.reload(), 2500); // Actually refresh page
+                    }
+                }, delay);
+                delay += Math.random() * 600 + 300; // Random hacker typing delay
+            });
+        }
+
+
+        // ==========================================
+        // DATA.DECRYPT LOGIC (MEMORY MATCH)
+        // ==========================================
+        const decryptGrid = document.getElementById("decrypt-grid");
+        const matchScoreEl = document.getElementById("match-score");
+        const movesCountEl = document.getElementById("moves-count");
+        
+        const symbols = ['</>', '{}', '[]', '##', '&&', '()', '||', '=='];
+        let cardsArray = [];
+        let firstCard = null;
+        let secondCard = null;
+        let matches = 0;
+        let moves = 0;
+        let lockBoard = false;
+
+        function initDecrypt() {
+            decryptGrid.innerHTML = "";
+            matches = 0; moves = 0;
+            matchScoreEl.innerText = matches;
+            movesCountEl.innerText = moves;
+            firstCard = null; secondCard = null; lockBoard = false;
+
+            // Create pairs and shuffle
+            cardsArray = [...symbols, ...symbols];
+            cardsArray.sort(() => 0.5 - Math.random());
+
+            cardsArray.forEach((symbol, index) => {
+                const card = document.createElement("div");
+                card.classList.add("decrypt-card");
+                card.dataset.symbol = symbol;
+                card.innerText = symbol; // Text is hidden via color:transparent in CSS
+                
+                card.addEventListener("click", flipCard);
+                decryptGrid.appendChild(card);
+            });
+        }
+
+        function flipCard() {
+            if (lockBoard) return;
+            if (this === firstCard) return;
+
+            this.classList.add("flipped");
+
+            if (!firstCard) {
+                firstCard = this;
+                return;
+            }
+
+            secondCard = this;
+            moves++;
+            movesCountEl.innerText = moves;
+            checkForMatch();
+        }
+
+        function checkForMatch() {
+            let isMatch = firstCard.dataset.symbol === secondCard.dataset.symbol;
+
+            if (isMatch) {
+                disableCards();
+            } else {
+                unflipCards();
+            }
+        }
+
+        function disableCards() {
+            firstCard.classList.add("matched");
+            secondCard.classList.add("matched");
+            matches++;
+            matchScoreEl.innerText = matches;
+            
+            resetBoard();
+
+            // Win Condition
+            if (matches === 8) {
+                setTimeout(() => {
+                    triggerSystemReboot();
+                }, 1000);
+            }
+        }
+
+        function unflipCards() {
+            lockBoard = true;
+            setTimeout(() => {
+                firstCard.classList.remove("flipped");
+                secondCard.classList.remove("flipped");
+                resetBoard();
+            }, 800);
+        }
+
+        function resetBoard() {
+            [firstCard, secondCard, lockBoard] = [null, null, false];
+        }
 
 
         // ==========================================
@@ -505,7 +675,7 @@
                     let cell = document.createElement("input");
                     cell.type = "text"; cell.maxLength = "1"; cell.className = "sudoku-cell";
                     cell.dataset.row = i; cell.dataset.col = j;
-                    cell.inputMode = "numeric"; // Pops up number keypad on mobile
+                    cell.inputMode = "numeric"; 
 
                     if (j === 2 || j === 5) cell.classList.add("border-right-thick");
                     if (i === 2 || i === 5) cell.classList.add("border-bottom-thick");
@@ -542,7 +712,11 @@
             } else if (!isComplete) {
                 statusMsg.innerText = "[ SYSTEM INCOMPLETE: FILL ALL BLOCKS ]"; statusMsg.style.color = "#E7E7E7";
             } else {
-                statusMsg.innerText = "[ SYSTEM RESTORED: SUDOKU SOLVED! ]"; statusMsg.style.color = "#00ff41";
+                statusMsg.innerText = "[ SYSTEM RESTORED: INITIATING REBOOT ]"; statusMsg.style.color = "#00ff41";
+                // Trigger Hollywood Hacker Bootup Screen!
+                setTimeout(() => {
+                    triggerSystemReboot();
+                }, 1000);
             }
         }
 

@@ -67,15 +67,15 @@
         /* =========================================
            CUSTOM GRAIN EFFECT
            ========================================= */
-        .grain-overlay {
+        /* .grain-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             pointer-events: none; z-index: 9998; opacity: 0.1; 
-            background-image: url('YOUR_CUSTOM_GRAIN_IMAGE.png'); 
+            background-image: url('/Design_Gallery/assets/008.jpg'); 
             background-size: cover; 
             animation: grainAnim 0.5s steps(5) infinite;
         }
         body.light-mode .grain-overlay { opacity: 0.3; filter: invert(1); }
-        @keyframes grainAnim { 0% { transform: translate(0, 0); } 20% { transform: translate(-1%, 1%); } 40% { transform: translate(1%, -1%); } 60% { transform: translate(-1%, -1%); } 80% { transform: translate(1%, 1%); } 100% { transform: translate(0, 0); } }
+        @keyframes grainAnim { 0% { transform: translate(0, 0); } 20% { transform: translate(-1%, 1%); } 40% { transform: translate(1%, -1%); } 60% { transform: translate(-1%, -1%); } 80% { transform: translate(1%, 1%); } 100% { transform: translate(0, 0); } } */
 
         /* =========================================
            CUSTOM INTERACTIVE CURSOR
@@ -516,13 +516,77 @@
     .feature-indicator { margin-top: 5px; }
 }
 
+
+/* =========================================
+           INTERACTIVE TERMINAL (CMD) CSS
+           ========================================= */
+        .terminal-overlay {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(10, 10, 10, 0.85); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            z-index: 100000; display: flex; justify-content: center; align-items: center;
+            opacity: 0; visibility: hidden; pointer-events: none;
+            transition: opacity 0.4s ease, visibility 0.4s;
+        }
+        body.light-mode .terminal-overlay { background: rgba(230, 230, 230, 0.85); }
+        .terminal-overlay.active { opacity: 1; visibility: visible; pointer-events: auto; }
+
+        .terminal-box {
+            width: 85vw; max-width: 900px; height: 70vh;
+            background: #121212; border: 1px solid var(--accent);
+            border-radius: 8px; box-shadow: 0 20px 50px rgba(0,0,0,0.5), 0 0 20px rgba(138, 123, 254, 0.15);
+            display: flex; flex-direction: column; overflow: hidden;
+            transform: translateY(-50px); transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        body.light-mode .terminal-box { box-shadow: 0 20px 50px rgba(0,0,0,0.2), 0 0 20px rgba(108, 92, 231, 0.3); }
+        .terminal-overlay.active .terminal-box { transform: translateY(0); }
+
+        .terminal-header {
+            background: #1e1e1e; padding: 12px 15px; display: flex; align-items: center; justify-content: space-between;
+            border-bottom: 1px solid #333;
+        }
+        .mac-dots { display: flex; gap: 8px; }
+        .mac-dots span { width: 12px; height: 12px; border-radius: 50%; background: #555; }
+        .mac-dots span:nth-child(1) { background: #ff5f56; }
+        .mac-dots span:nth-child(2) { background: #ffbd2e; }
+        .mac-dots span:nth-child(3) { background: #27c93f; }
+        .terminal-title { color: #888; font-family: 'Space Mono', monospace; font-size: 0.8rem; }
+        .close-terminal { color: #888; font-size: 1.8rem; cursor: pointer; line-height: 0.8; }
+        .close-terminal:hover { color: #ff5f56; }
+
+        .terminal-body {
+            padding: 25px; flex-grow: 1; overflow-y: auto;
+            font-family: 'Space Mono', monospace; font-size: 0.95rem; color: #00ff41;
+            scrollbar-width: thin; scrollbar-color: var(--accent) #121212;
+            cursor: text;
+        }
+        .terminal-body::-webkit-scrollbar { width: 8px; }
+        .terminal-body::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 4px; }
+
+        .cmd-line { margin-bottom: 12px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word; }
+        .cmd-line.user-cmd { color: #E7E7E7; }
+        .cmd-line.accent-text { color: var(--accent); }
+        .cmd-line.error-text { color: #ff5f56; }
+
+        .terminal-input-line { display: flex; align-items: center; margin-top: 15px; }
+        .cmd-prompt { color: var(--accent); margin-right: 12px; white-space: nowrap; }
+        #terminalInput {
+            background: transparent; border: none; outline: none; color: #00ff41;
+            font-family: 'Space Mono', monospace; font-size: 0.95rem; flex-grow: 1;
+            caret-color: #00ff41; width: 100%;
+        }
+
+        @media (max-width: 768px) {
+            .terminal-box { width: 95vw; height: 80vh; }
+            .terminal-body { font-size: 0.8rem; padding: 15px; }
+            #terminalInput { font-size: 0.8rem; }
+        }
     </style>
 </head>
 <body>
 
     <div id="preloader"><div id="loader-text">ARCHIVE.LOADING [<span id="loader-perc">0</span>%]</div></div>
     <div id="scroll-progress"></div>
-    <div class="grain-overlay"></div>
+    <!-- <div class="grain-overlay"></div> -->
     <div class="custom-cursor" id="customCursor"><span id="cursorText"></span></div>
 
     <header class="editorial-header">
@@ -538,6 +602,14 @@
         <div class="header-box controls-box">
             <div class="controls-container">
                 <div class="controls-row">
+
+                    <button id="cmd-toggle" class="control-btn expanding-btn fill-btn">
+                        <span class="icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
+                        </span>
+                        <span class="text">CMD</span>
+                    </button>
+
                     <button id="info-toggle" class="control-btn expanding-btn fill-btn">
                         <span class="icon">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
@@ -861,6 +933,7 @@
           <div class="video-card">
             <div class="iframe-wrapper interactive-btn">
                 <div class="video-overlay custom-cursor-trigger" data-cursor="PLAY"></div>
+                --
                 </div>
             <div class="video-info"><span class="video-num">(V.00)</span><h3 class="video-title">More Video will Update Soon</h3></div>
           </div>
@@ -911,6 +984,27 @@
             <div class="info-section">
                 <h3>[ RELIABILITY ]</h3>
                 <p>The immersive experience depends on your system's rendering capability and network speed for high-res images. Please wait for the initial load.</p>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="terminalOverlay" class="terminal-overlay">
+        <div class="terminal-box">
+            <div class="terminal-header">
+                <div class="mac-dots"><span></span><span></span><span></span></div>
+                <div class="terminal-title">archive.exe - bash</div>
+                <div class="close-terminal custom-cursor-trigger" data-cursor="CLOSE" id="closeTerminal">&times;</div>
+            </div>
+            <div class="terminal-body" id="terminalBody">
+                <div id="terminalOutput">
+                    <div class="cmd-line accent-text">System initialized. Secure connection established.</div>
+                    <div class="cmd-line">Type 'help' to see available commands.</div>
+                </div>
+                <div class="terminal-input-line">
+                    <span class="cmd-prompt">visitor@archive:~$</span>
+                    <input type="text" id="terminalInput" autocomplete="off" spellcheck="false" />
+                </div>
             </div>
         </div>
     </div>
@@ -1004,14 +1098,20 @@
             const clockElement = document.getElementById('digital-clock'); if(clockElement) clockElement.innerText = timeString;
         } setInterval(updateClock, 1000); updateClock();
 
-        /* =========================================
+       /* =========================================
            CHAMELEON ACCENT SWITCHER
            ========================================= */
         const rootOptions = document.documentElement.style;
         const accents = ['#8A7BFE', '#f7fff7', '#00FFFF', '#FF8C00', '#ADC178', '#FFA5AB', '#7dcfb6', '#ffcb77']; let accentIndex = 0;
         function changeAccent() { playClick(); accentIndex = (accentIndex + 1) % accents.length; rootOptions.setProperty('--accent', accents[accentIndex]); }
         document.getElementById('color-chameleon').addEventListener('click', changeAccent);
-        document.addEventListener('keydown', (e) => { if (e.key.toLowerCase() === 'c' && !overlay.classList.contains('active')) changeAccent(); });
+        
+        document.addEventListener('keydown', (e) => { 
+            // 🔴 FIX: Input box-la type pannumbothu color change trigger aagathu
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+            
+            if (e.key.toLowerCase() === 'c' && !document.getElementById('previewOverlay').classList.contains('active')) changeAccent(); 
+        });
 
         /* =========================================
            INVERT TOGGLE
@@ -1274,6 +1374,116 @@ new IntersectionObserver((entries) => {
             }, 800); 
         });
 
+
+
+            /* =========================================
+           INTERACTIVE TERMINAL LOGIC (JS)
+           ========================================= */
+        const cmdToggleBtn = document.getElementById('cmd-toggle');
+        const terminalOverlay = document.getElementById('terminalOverlay');
+        const closeTerminalBtn = document.getElementById('closeTerminal');
+        const terminalInput = document.getElementById('terminalInput');
+        const terminalOutput = document.getElementById('terminalOutput');
+        const terminalBody = document.getElementById('terminalBody');
+
+        function openTerminal() {
+            if(typeof playClick === "function") playClick();
+            terminalOverlay.classList.add('active');
+            setTimeout(() => terminalInput.focus(), 100); // Focus input automatically
+        }
+
+        function closeTerminalAction() {
+            if(typeof playClick === "function") playClick();
+            terminalOverlay.classList.remove('active');
+            
+            // 🔴 FIX: Terminal close aanathum input focus-ah cut panni text-ah clear pannidum
+            terminalInput.blur(); 
+            terminalInput.value = ''; 
+            
+            if(typeof resetHoverCursor === "function") resetHoverCursor();
+        }
+
+        if (cmdToggleBtn) cmdToggleBtn.addEventListener('click', openTerminal);
+        if (closeTerminalBtn) closeTerminalBtn.addEventListener('click', closeTerminalAction);
+
+        // Open terminal with 'T' key
+        document.addEventListener('keydown', (e) => {
+            const isAnyOverlayActive = document.getElementById('previewOverlay').classList.contains('active') || 
+                                       document.getElementById('infoOverlay').classList.contains('active') || 
+                                       terminalOverlay.classList.contains('active');
+            
+            if (e.key.toLowerCase() === 't' && !isAnyOverlayActive) {
+                e.preventDefault(); openTerminal();
+            }
+            if (e.key === 'Escape' && terminalOverlay.classList.contains('active')) {
+                closeTerminalAction();
+            }
+        });
+
+        // Click anywhere in terminal body focuses the input
+        terminalBody.addEventListener('click', () => terminalInput.focus());
+
+        terminalInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                const command = this.value.trim();
+                if (command) processCommand(command);
+                this.value = '';
+            }
+        });
+
+        function printTerminal(text, className = '') {
+            const div = document.createElement('div');
+            div.className = `cmd-line ${className}`;
+            div.innerHTML = text;
+            terminalOutput.appendChild(div);
+            terminalBody.scrollTop = terminalBody.scrollHeight; // Auto-scroll
+        }
+
+        function processCommand(cmd) {
+            printTerminal(`<span class="cmd-prompt">visitor@archive:~$</span> <span class="user-cmd">${cmd}</span>`);
+            const args = cmd.toLowerCase().split(' ');
+            const mainCmd = args[0];
+
+            switch(mainCmd) {
+                case 'help':
+                    printTerminal("Available commands:");
+                    printTerminal("  <span class='accent-text'>about</span>    - Display developer profile");
+                    printTerminal("  <span class='accent-text'>skills</span>   - List technical & design skills");
+                    printTerminal("  <span class='accent-text'>contact</span>  - Get in touch");
+                    printTerminal("  <span class='accent-text'>clear</span>    - Clear terminal window");
+                    printTerminal("  <span class='accent-text'>exit</span>     - Close the terminal session");
+                    break;
+                case 'about':
+                    printTerminal("GOKULNATH M // MULTIDISCIPLINARY DESIGNER");
+                    printTerminal("Designing for Wonder Design Studio.");
+                    printTerminal("Based in Bengaluru.");
+                    printTerminal("Focus: Minimal yet bold aesthetics, editorial layouts, UI/UX, and motion design.");
+                    break;
+                case 'skills':
+                    printTerminal("Loading skill modules...");
+                    setTimeout(() => printTerminal("[██████████] 100% - UI/UX Prototyping & Figma Wireframing"), 300);
+                    setTimeout(() => printTerminal("[██████████] 100% - Brand Identity & Logo Creation"), 600);
+                    setTimeout(() => printTerminal("[█████████░] 90%  - Web Design & Digital Layouts"), 900);
+                    setTimeout(() => printTerminal("[████████░░] 80%  - Motion Design & Video Editing"), 1200);
+                    break;
+                case 'contact':
+                    printTerminal("Initiating secure connection...");
+                    printTerminal("LinkedIn: linkedin.com/in/gokulnath-m");
+                    printTerminal("Email:  gokuldev247@gmail.com - or - wonderdesignstudio@protonmail.com");
+                    break;
+                case 'clear':
+                    terminalOutput.innerHTML = '';
+                    break;
+                case 'exit':
+                    closeTerminalAction();
+                    break;
+                case 'sudo':
+                    printTerminal("Access denied. This incident will be reported.", "error-text");
+                    break;
+                default:
+                    printTerminal(`Command not found: ${mainCmd}. Type 'help' for available commands.`, "error-text");
+            }
+        }
     </script>
 </body>
 </html>
