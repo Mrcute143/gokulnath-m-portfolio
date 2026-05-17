@@ -1459,12 +1459,40 @@ new IntersectionObserver((entries) => {
                     printTerminal("Based in Bengaluru.");
                     printTerminal("Focus: Minimal yet bold aesthetics, editorial layouts, UI/UX, and motion design.");
                     break;
-                case 'skills':
-                    printTerminal("Loading skill modules...");
-                    setTimeout(() => printTerminal("[██████████] 100% - UI/UX Prototyping & Figma Wireframing"), 300);
-                    setTimeout(() => printTerminal("[██████████] 100% - Brand Identity & Logo Creation"), 600);
-                    setTimeout(() => printTerminal("[█████████░] 90%  - Web Design & Digital Layouts"), 900);
-                    setTimeout(() => printTerminal("[████████░░] 80%  - Motion Design & Video Editing"), 1200);
+               case 'skills':
+            return `
+                <div style="color: #888; margin-bottom: 10px;">> EXECUTING SKILL_MATRIX.EXE...</div>
+                <div style="color: var(--accent); margin-bottom: 15px;">> MULTIDISCIPLINARY_PROFILE: ACTIVE</div>
+                
+                <div style="margin-bottom: 8px; display: flex; flex-wrap: wrap; gap: 10px;">
+                    <span style="color: var(--accent);">[██████████]</span> 
+                    <span style="color: #E7E7E7;">100% GRAPHIC DESIGN <span style="color:#888; font-size: 0.85em;">(Posters, Social Media, Ads)</span></span>
+                </div>
+                
+                <div style="margin-bottom: 8px; display: flex; flex-wrap: wrap; gap: 10px;">
+                    <span style="color: var(--accent);">[█████████░]</span> 
+                    <span style="color: #E7E7E7;"> 90% WEB DESIGN & UI LAYOUTS <span style="color:#888; font-size: 0.85em;">(Figma, Wireframing)</span></span>
+                </div>
+                
+                <div style="margin-bottom: 8px; display: flex; flex-wrap: wrap; gap: 10px;">
+                    <span style="color: var(--accent);">[████████░░]</span> 
+                    <span style="color: #E7E7E7;"> 85% BRAND IDENTITY <span style="color:#888; font-size: 0.85em;">(Logos, Typography, Guidelines)</span></span>
+                </div>
+
+                <div style="margin-bottom: 8px; display: flex; flex-wrap: wrap; gap: 10px;">
+                    <span style="color: var(--accent);">[███████░░░]</span> 
+                    <span style="color: #E7E7E7;"> 75% VIDEO EDITING & MOTION <span style="color:#888; font-size: 0.85em;">(Premiere, AE)</span></span>
+                </div>
+
+                <div style="margin-bottom: 8px; display: flex; flex-wrap: wrap; gap: 10px;">
+                    <span style="color: var(--accent);">[█████████░]</span> 
+                    <span style="color: #E7E7E7;"> 90% PROTOTYPING & UX <span style="color:#888; font-size: 0.85em;">(Interactive Flows)</span></span>
+                </div>
+
+                <div style="color: #00ff41; margin-top: 15px; font-size: 0.9em;">
+                    > STATUS: FULLY EQUIPPED FOR VISUAL PROBLEM SOLVING.
+                </div>
+            `;
                     break;
                 case 'contact':
                     printTerminal("Initiating secure connection...");
